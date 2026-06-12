@@ -80,7 +80,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
   .main{display:flex;flex-direction:column;min-height:unset}
   .content{order:1;padding:10px 10px 0}
   .sidebar{order:2;border-right:none;border-top:1px solid var(--border);overflow-y:visible;max-height:none;padding:12px 10px}
-  .charts-section{grid-template-columns:1fr;margin-top:8px}
+  .charts-section{grid-template-columns:1fr;margin-top:8px;display:flex;flex-direction:column}
+  /* mobile order: levels, notional, calls/puts */
+  #chart-levels-card{order:1}
+  .chart-card:has(#chart-not){order:2}
+  .chart-card:has(#chart-cp){order:3}
   .result-header{padding:12px 12px;flex-wrap:wrap;gap:6px}
   .result-title{font-size:15px}
   .result-body{padding:10px 12px;gap:8px}
@@ -359,6 +363,29 @@ canvas.mini-chart{width:100%;display:block}
 .struct-pill.pill-dn{border-color:rgba(255,71,87,0.4);color:var(--red);background:var(--red-dim)}
 .struct-pill.pill-warn{border-color:rgba(255,211,42,0.4);color:var(--yellow);background:var(--yellow-dim)}
 
+
+/* ── 0DTE SECTION ───────────────────────────────────── */
+.dte-section{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px}
+.dte-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dte-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--yellow)}
+.dte-badge{font-family:var(--mono);font-size:8px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--yellow-dim);color:var(--yellow);letter-spacing:0.08em}
+.dte-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:700px){.dte-inputs{grid-template-columns:1fr}}
+.dte-input-group{display:flex;flex-direction:column;gap:4px}
+.dte-input-label{font-family:var(--mono);font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em}
+.dte-input{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);outline:none;width:100%;transition:border-color .15s}
+.dte-input:focus{border-color:var(--yellow)}
+.dte-input.cw{color:var(--red)}
+.dte-input.pw{color:var(--green)}
+.dte-input.zg{color:var(--blue)}
+.dte-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)}
+.dte-row:last-child{border-bottom:none}
+.dte-row-name{font-family:var(--mono);font-size:11px;font-weight:700}
+.dte-row-price{font-family:var(--mono);font-size:12px;font-weight:700}
+.dte-row-dist{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:10px}
+/* 0DTE tag in analyse */
+.tag-0dte{background:rgba(255,211,42,0.15);color:var(--yellow);border:1px solid rgba(255,211,42,0.3)}
+
 </style>
 </head>
 <body>
@@ -526,7 +553,16 @@ canvas.mini-chart{width:100%;display:block}
     <div class="page-title">Lecture en temps réel</div>
     <div id="result-box"></div>
 
-    <div class="charts-section">
+    <div class="charts-section" style="grid-template-columns:1fr 1fr 1fr">
+      <!-- Chart 3: GEX Levels — first -->
+      <div class="chart-card" id="chart-levels-card">
+        <div class="chart-card-header">
+          <div class="chart-card-title">Structure GEX — Spot vs Niveaux</div>
+          <div id="chart-levels-spot-label" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--green)"></div>
+        </div>
+        <div class="chart-wrap" style="padding:4px 8px"><canvas id="chart-levels" class="mini-chart" height="110"></canvas></div>
+      </div>
+      <!-- Chart 1: Calls/Puts -->
       <div class="chart-card">
         <div class="chart-card-header">
           <div class="chart-card-title">Calls / Puts flow</div>
@@ -552,6 +588,7 @@ canvas.mini-chart{width:100%;display:block}
       </div>
     </div>
 
+
     <!-- RÉSUMÉ RÉPÉTÉ SOUS LES CHARTS -->
     <div id="result-summary-box"></div>
   </div>
@@ -560,45 +597,33 @@ canvas.mini-chart{width:100%;display:block}
   <!-- STRUCTURE TAB -->
   <div class="page" id="tab-struct">
     <div class="page-title">Structure GEX</div>
-
-    <!-- Spot input + search -->
     <div class="struct-top">
       <div class="spot-input-wrap">
         <div class="spot-input-label">Spot ES</div>
         <input type="number" class="spot-input" id="spot-input" placeholder="7450" step="0.25" oninput="onSpotChange()">
       </div>
-      <a class="spot-search-btn" href="https://finance.yahoo.com/quote/ES%3DF/" target="_blank" title="Ouvrir Yahoo Finance ES Futures">
-        🔍 Prix ES
-      </a>
-      <a class="spot-search-btn" href="https://finance.yahoo.com/quote=%5EGSPC/" target="_blank" title="Ouvrir Yahoo Finance SPX">
-        🔍 SPX
-      </a>
+      <a class="spot-search-btn" href="https://finance.yahoo.com/quote/ES%3DF/" target="_blank">🔍 Prix ES</a>
+      <a class="spot-search-btn" href="https://finance.yahoo.com/quote/%5EGSPC/" target="_blank">🔍 SPX</a>
+      <button class="import-btn" onclick="document.getElementById('csv-file-input').click()">📂 CSV</button>
+      <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="importCSV(event)">
+      <button class="import-btn" onclick="clearLevels()" style="color:var(--red)">✕</button>
     </div>
-
-    <!-- Import section -->
-    <div style="margin-bottom:14px">
-      <div class="import-wrap">
-        <button class="import-btn" onclick="toggleImport('paste')">📋 Coller les niveaux</button>
-        <button class="import-btn" onclick="document.getElementById('csv-file-input').click()">📂 Importer CSV</button>
-        <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="importCSV(event)">
-        <button class="import-btn" onclick="clearLevels()" style="color:var(--red)">✕ Effacer</button>
-      </div>
-      <textarea id="paste-area" class="import-area" placeholder="Coller ici — format :&#10;SPX&#9;/ES&#9;Level ID&#10;7500&#9;7567&#9;Call Wall&#10;7351&#9;7418&#9;Zero Gamma&#10;&#10;Séparateur : tabulation ou virgule" oninput="parsePastedLevels()"></textarea>
+    <div style="margin-bottom:12px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Coller les niveaux InsiderFinance (majeurs + 0DTE)</div>
+      <textarea id="paste-area" class="import-area visible"
+        placeholder="Call Resistance, 7550,&#10;Put Support, 7300,&#10;HVL, 7390,&#10;1D Min, 7310.97,&#10;1D Max, 7481.03,&#10;Call Resistance 0DTE, 7450,&#10;Put Support 0DTE, 7300,&#10;HVL 0DTE, 7380,&#10;Gamma Wall 0DTE, 7450"
+        oninput="parsePastedLevels()" onpaste="setTimeout(parsePastedLevels,10)"
+        style="min-height:120px"></textarea>
       <div id="parse-status" style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:5px"></div>
     </div>
-
-    <!-- Régime dynamique -->
     <div class="regime-bar" id="regime-bar">
       <div class="regime-bar-title">Régime GEX détecté</div>
-      <div id="regime-content" style="color:var(--text3);font-family:var(--mono);font-size:11px">
-        Entrer le spot ES et les niveaux pour calculer le régime.
-      </div>
+      <div id="regime-content" style="color:var(--text3);font-family:var(--mono);font-size:11px">Entrer le spot ES et les niveaux pour calculer le régime.</div>
     </div>
-
-    <!-- Niveaux clés + distances -->
+    <div id="dte-summary" style="margin-bottom:12px"></div>
     <div class="struct-grid" id="key-levels-grid" style="display:none">
       <div class="struct-card">
-        <div class="struct-card-title">Niveaux clés</div>
+        <div class="struct-card-title">Niveaux clés (tous)</div>
         <div id="key-levels-list"></div>
       </div>
       <div class="struct-card">
@@ -606,18 +631,14 @@ canvas.mini-chart{width:100%;display:block}
         <div id="score-block"></div>
       </div>
     </div>
-
-    <!-- Tableau complet — collapsed by default -->
     <div class="struct-card" id="full-table-card" style="display:none">
       <div class="struct-card-title" onclick="toggleFullTable()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none">
-        <span>Tous les niveaux</span>
+        <span>Tous les niveaux (détail)</span>
         <span id="full-table-chevron" style="font-family:var(--mono);font-size:10px;color:var(--text3);transition:transform .2s">▶</span>
       </div>
       <div id="full-table-body" style="display:none;margin-top:10px">
-        <table class="levels-table" id="levels-table">
-          <thead><tr>
-            <th>Level</th><th>SPX</th><th>/ES</th><th>Distance</th><th>Zone</th>
-          </tr></thead>
+        <table class="levels-table">
+          <thead><tr><th>Level</th><th>Prix ES</th><th>Distance</th><th>%</th></tr></thead>
           <tbody id="levels-tbody"></tbody>
         </table>
       </div>
@@ -962,6 +983,187 @@ function drawChart(canvasId, lines, opts) {
   });
 }
 
+
+/* ═══════════════════════════════════════════════════
+   CHART 3 — GEX LEVELS LADDER (TradingView style)
+═══════════════════════════════════════════════════ */
+function getAllLevelsForChart() {
+  const all = [];
+  // GEX levels
+  for (const l of gexLevels) {
+    all.push({ price: l.es, label: l.id, color: levelColor(l.id), is0dte: false });
+  }
+  // 0DTE levels
+  if (dte.cw) all.push({ price: dte.cw, label: "CW 0DTE", color: "#ff4757", is0dte: true });
+  if (dte.pw) all.push({ price: dte.pw, label: "PW 0DTE", color: "#00d084", is0dte: true });
+  if (dte.zg) all.push({ price: dte.zg, label: "ZG 0DTE", color: "#1e90ff", is0dte: true });
+  return all;
+}
+
+function drawLevelsChart() {
+  const canvas = document.getElementById("chart-levels");
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width === 0) return;
+  canvas.width  = rect.width  * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  const isDarkTheme = document.documentElement.getAttribute("data-theme") !== "light";
+  const bgColor   = isDarkTheme ? "#111519" : "#ffffff";
+  const gridColor = isDarkTheme ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)";
+  const textColor = isDarkTheme ? "#8b9099" : "#4a5260";
+  const spotColor = isDarkTheme ? "#ffffff" : "#111519";
+
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, W, H);
+
+  const levels = getAllLevelsForChart();
+
+  // Need spot to draw anything meaningful
+  if (!spotES && levels.length === 0) {
+    ctx.fillStyle = textColor;
+    ctx.font = "12px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Entrer le Spot ES et les niveaux dans l'onglet Structure GEX", W/2, H/2);
+    return;
+  }
+
+  // Gather all prices including spot for range
+  const allPrices = levels.map(l => l.price);
+  if (spotES) allPrices.push(spotES);
+  if (allPrices.length === 0) return;
+
+  let minP = Math.min(...allPrices);
+  let maxP = Math.max(...allPrices);
+  const range = maxP - minP || 100;
+  const pad = range * 0.12;
+  minP -= pad; maxP += pad;
+  const totalRange = maxP - minP;
+
+  const PAD_L = 58, PAD_R = 130, PAD_T = 16, PAD_B = 16;
+  const chartH = H - PAD_T - PAD_B;
+  const chartW = W - PAD_L - PAD_R;
+
+  const toY = p => PAD_T + (1 - (p - minP) / totalRange) * chartH;
+
+  // ── Grid lines + price axis ──────────────────────────────────────────────
+  const nGrid = 6;
+  ctx.setLineDash([2, 4]);
+  for (let i = 0; i <= nGrid; i++) {
+    const p = minP + (i / nGrid) * totalRange;
+    const y = toY(p);
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD_L, y);
+    ctx.lineTo(W - PAD_R, y);
+    ctx.stroke();
+    // Price label left
+    ctx.fillStyle = textColor;
+    ctx.font = "bold 9px 'JetBrains Mono', monospace";
+    ctx.textAlign = "right";
+    ctx.fillText(Math.round(p).toString(), PAD_L - 6, y + 3);
+  }
+  ctx.setLineDash([]);
+
+  // ── Candlestick-style body area (spot range context) ─────────────────────
+  // Draw a subtle vertical bar representing the "candle body"
+  const barX = PAD_L + chartW * 0.5;
+  const barW = Math.max(12, chartW * 0.08);
+
+  // ── Level lines ──────────────────────────────────────────────────────────
+  // Sort levels by price
+  const sorted = [...levels].sort((a, b) => b.price - a.price);
+
+  // Detect label collisions — min gap in px
+  const MIN_GAP = 13;
+  const labelPositions = [];
+  function getFreeY(desiredY) {
+    let y = desiredY;
+    let tries = 0;
+    while (tries < 20) {
+      const conflict = labelPositions.find(p => Math.abs(p - y) < MIN_GAP);
+      if (!conflict) break;
+      y = conflict + MIN_GAP;
+      tries++;
+    }
+    labelPositions.push(y);
+    return y;
+  }
+
+  for (const lvl of sorted) {
+    const y = toY(lvl.price);
+    const col = lvl.color;
+    const alpha = lvl.is0dte ? "cc" : "ff";
+
+    // Line
+    ctx.strokeStyle = col + (lvl.is0dte ? "99" : "bb");
+    ctx.lineWidth = lvl.is0dte ? 1 : 1.5;
+    ctx.setLineDash(lvl.is0dte ? [4, 3] : []);
+    ctx.beginPath();
+    ctx.moveTo(PAD_L, y);
+    ctx.lineTo(W - PAD_R, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Price on right
+    const labelY = getFreeY(y);
+    ctx.fillStyle = col;
+    ctx.font = "bold 9px 'JetBrains Mono', monospace";
+    ctx.textAlign = "left";
+    const dist = spotES ? (+(spotES - lvl.price).toFixed(0)) : null;
+    const distStr = dist !== null ? " (" + (dist > 0 ? "+" : "") + dist + ")" : "";
+    // Label name
+    ctx.fillText(lvl.label, W - PAD_R + 6, labelY - 1);
+    // Price + dist
+    ctx.fillStyle = textColor;
+    ctx.font = "9px 'JetBrains Mono', monospace";
+    ctx.fillText(lvl.price + distStr, W - PAD_R + 6, labelY + 9);
+  }
+
+  // ── Spot line ────────────────────────────────────────────────────────────
+  if (spotES) {
+    const sy = toY(spotES);
+    // Glow effect
+    ctx.shadowColor = spotColor;
+    ctx.shadowBlur = 6;
+    ctx.strokeStyle = spotColor;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 3]);
+    ctx.beginPath();
+    ctx.moveTo(PAD_L, sy);
+    ctx.lineTo(W - PAD_R, sy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
+
+    // Spot label right
+    const slabelY = toY(spotES);
+    ctx.fillStyle = spotColor;
+    ctx.font = "bold 10px 'JetBrains Mono', monospace";
+    ctx.textAlign = "left";
+    ctx.fillText("SPOT", W - PAD_R + 6, slabelY - 1);
+    ctx.font = "bold 11px 'JetBrains Mono', monospace";
+    ctx.fillText(spotES.toString(), W - PAD_R + 6, slabelY + 10);
+
+    // Spot price label on left axis
+    const spY = Math.max(PAD_T + 8, Math.min(H - PAD_B - 8, sy));
+    ctx.fillStyle = isDarkTheme ? "#0b0e11" : "#ffffff";
+    ctx.fillRect(0, spY - 9, PAD_L - 2, 16);
+    ctx.fillStyle = spotColor;
+    ctx.font = "bold 9px 'JetBrains Mono', monospace";
+    ctx.textAlign = "right";
+    ctx.fillText(spotES.toString(), PAD_L - 4, spY + 3);
+
+    // Update spot label in header
+    const hdr = document.getElementById("chart-levels-spot-label");
+    if (hdr) hdr.textContent = "Spot ES: " + spotES;
+  }
+}
+
 function drawBoth(data){
   drawChart('chart-cp',[
     {data:data.callLine,color:'#00d084',width:2},
@@ -970,6 +1172,7 @@ function drawBoth(data){
   drawChart('chart-not',[
     {data:data.notLine,color:'#ffd32a',width:2},
   ],{zeroLine:true});
+  drawLevelsChart();
 }
 
 function animateTo(target){
@@ -1024,6 +1227,91 @@ function updateBars(strength,cls){
    CONTEXTUAL ACTION — enrichit le verdict avec les niveaux GEX
    Retourne { action, warnings, target, exit, scoreLabel, scoreCls }
 ═══════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════
+   0DTE STATE
+═══════════════════════════════ */
+let dte = { cw: null, pw: null, zg: null };
+
+function onDteChange() {
+  dte.cw = parseFloat(document.getElementById('dte-cw').value) || null;
+  dte.pw = parseFloat(document.getElementById('dte-pw').value) || null;
+  dte.zg = parseFloat(document.getElementById('dte-zg').value) || null;
+  renderDteSummary();
+  render();
+}
+
+function renderDteSummary() {
+  const el = document.getElementById('dte-summary');
+  if (!el) return;
+  if (!dte.cw && !dte.pw && !dte.zg) { el.innerHTML = ''; return; }
+  if (!spotES) { el.innerHTML = '<span style="font-family:var(--mono);font-size:10px;color:var(--text3)">Entrer le Spot ES pour calculer les distances.</span>'; return; }
+
+  const rows = [];
+  if (dte.cw) {
+    const d = +(spotES - dte.cw).toFixed(0);
+    const cls = Math.abs(d) <= 15 ? 'dist-near' : d < 0 ? 'dist-below' : 'dist-above';
+    rows.push('<div class="dte-row"><span class="dte-row-name" style="color:var(--red)">Call Wall 0DTE</span><span class="dte-row-price">' + dte.cw + '</span><span class="dte-row-dist ' + cls + '">' + (d > 0 ? '+' : '') + d + 'pt</span></div>');
+  }
+  if (dte.zg) {
+    const d = +(spotES - dte.zg).toFixed(0);
+    const cls = Math.abs(d) <= 10 ? 'dist-near' : d < 0 ? 'dist-below' : 'dist-above';
+    const regime0dte = d > 0 ? 'Gamma+ 0DTE' : 'Gamma− 0DTE';
+    const rcls = d > 0 ? 'color:var(--green)' : 'color:var(--red)';
+    rows.push('<div class="dte-row"><span class="dte-row-name" style="color:var(--blue)">Zero Gamma 0DTE</span><span class="dte-row-price" style="' + rcls + '">' + regime0dte + ' (' + dte.zg + ')</span><span class="dte-row-dist ' + cls + '">' + (d > 0 ? '+' : '') + d + 'pt</span></div>');
+  }
+  if (dte.pw) {
+    const d = +(spotES - dte.pw).toFixed(0);
+    const cls = Math.abs(d) <= 15 ? 'dist-near' : d < 0 ? 'dist-below' : 'dist-above';
+    rows.push('<div class="dte-row"><span class="dte-row-name" style="color:var(--green)">Put Wall 0DTE</span><span class="dte-row-price">' + dte.pw + '</span><span class="dte-row-dist ' + cls + '">' + (d > 0 ? '+' : '') + d + 'pt</span></div>');
+  }
+  el.innerHTML = rows.join('');
+}
+
+/* ── 0DTE CONTEXTUAL WARNINGS ───────────────────────── */
+function build0dteWarnings(cls) {
+  if (!spotES || (!dte.cw && !dte.pw && !dte.zg)) return [];
+  const warns = [];
+
+  // Call Wall 0DTE
+  if (dte.cw) {
+    const d = +(spotES - dte.cw).toFixed(0); // negative = spot below CW
+    if (d < 0 && Math.abs(d) <= 20) {
+      warns.push({ txt: "⚠ Call Wall 0DTE à " + dte.cw + " (" + Math.abs(d) + "pt) — résistance scalp immédiate. Targets courts.", cls: 'bear' });
+    } else if (d < 0 && Math.abs(d) <= 50) {
+      warns.push({ txt: "Call Wall 0DTE " + dte.cw + " (" + Math.abs(d) + "pt) — objectif naturel pour le scalp haussier.", cls: 'bull' });
+    } else if (d > 0) {
+      warns.push({ txt: "⚠ Spot au-dessus du Call Wall 0DTE (" + dte.cw + "). Zone de rejet 0DTE — prudence en long.", cls: 'bear' });
+    }
+  }
+
+  // Put Wall 0DTE
+  if (dte.pw) {
+    const d = +(spotES - dte.pw).toFixed(0); // positive = spot above PW
+    if (d > 0 && d <= 20) {
+      warns.push({ txt: "⚠ Put Wall 0DTE à " + dte.pw + " (" + d + "pt) — support scalp juste en dessous. Rebond dealers possible.", cls: 'bull' });
+    } else if (d > 0 && d <= 50) {
+      warns.push({ txt: "Put Wall 0DTE " + dte.pw + " (" + d + "pt) — plancher 0DTE, objectif baissier scalp.", cls: 'bear' });
+    } else if (d < 0) {
+      warns.push({ txt: "⚠ Spot sous le Put Wall 0DTE (" + dte.pw + "). Extension baissière 0DTE possible.", cls: 'bear' });
+    }
+  }
+
+  // Zero Gamma 0DTE — very important for scalp regime
+  if (dte.zg) {
+    const d = +(spotES - dte.zg).toFixed(0);
+    if (Math.abs(d) <= 8) {
+      warns.push({ txt: "⚠ Spot sur le Zero Gamma 0DTE (" + dte.zg + "). Changement de régime imminent — moves imprévisibles.", cls: 'warn' });
+    } else if (d > 0) {
+      warns.push({ txt: "Spot au-dessus du Zero Gamma 0DTE (" + dte.zg + ", +" + d + "pt) — régime stabilisant pour le scalp.", cls: 'bull' });
+    } else {
+      warns.push({ txt: "Spot sous le Zero Gamma 0DTE (" + dte.zg + ", " + d + "pt) — régime volatile 0DTE, moves amplifiés.", cls: 'bear' });
+    }
+  }
+
+  return warns;
+}
+
 function buildContextualAction(cls, baseAction) {
   const s = computeStructure();
   if (!s || !spotES) {
@@ -1151,6 +1439,15 @@ function render(){
   const warnHtml = ctx.warnings.length > 0
     ? ctx.warnings.map(w => '<div class="analyse-row"><div class="analyse-tag" style="background:var(--yellow-dim);color:var(--yellow);flex-shrink:0">⚠</div><div class="analyse-secondary-text" style="color:var(--yellow)">' + w + '</div></div>').join("")
     : "";
+  // 0DTE warnings
+  const dte0warns = build0dteWarnings(s.cls);
+  const dteHtml = dte0warns.length > 0
+    ? dte0warns.map(w => {
+        const bg = w.cls==='bull' ? 'var(--green-dim)' : w.cls==='bear' ? 'var(--red-dim)' : 'var(--yellow-dim)';
+        const fg = w.cls==='bull' ? 'var(--green)'    : w.cls==='bear' ? 'var(--red)'     : 'var(--yellow)';
+        return '<div class="analyse-row"><div class="analyse-tag tag-0dte" style="flex-shrink:0">0DTE</div><div class="analyse-secondary-text" style="color:' + fg + '">' + w.txt + '</div></div>';
+      }).join("")
+    : "";
   const targetHtml = ctx.target
     ? '<div class="analyse-row"><div class="analyse-tag" style="background:var(--green-dim);color:var(--green);flex-shrink:0">TARGET</div><div class="analyse-secondary-text">' + ctx.target + '</div></div>'
     : "";
@@ -1176,6 +1473,7 @@ function render(){
       </div>
       <div class="analyse-secondary">
         ${warnHtml}
+        ${dteHtml}
         ${targetHtml}
         <div class="analyse-secondary-title" style="margin-top:${warnHtml||targetHtml?'8px':'0'}">Raisonnement</div>
         <div class="analyse-row"><div class="analyse-tag tag-gamma">GAMMA</div><div class="analyse-secondary-text">${sec.gamma}</div></div>
@@ -1235,7 +1533,7 @@ function showTab(t){
   document.getElementById('tab-'+t).classList.add('active');
   document.querySelectorAll('.tab').forEach((b,i)=>{b.classList.toggle('active',['sim','struct','level','gamma','notional'][i]===t);});
   if(t==='sim')setTimeout(refreshCharts,50);
-  if(t==='struct')renderStructure();
+  if(t==='struct'){renderStructure();renderDteSummary();}
 }
 function toggleTheme(){
   isDark=!isDark;
@@ -1257,9 +1555,12 @@ let spotES = null;
 const LEVEL_COLORS = {
   "Call Wall":          "#ff4757",
   "Put Wall":           "#00d084",
+  "HVL":                "#1e90ff",
   "Zero Gamma":         "#1e90ff",
   "Volatility Trigger": "#ffd32a",
   "Vol Trigger":        "#ffd32a",
+  "1D Min":             "#00b0ff",
+  "1D Max":             "#ff9100",
   "Large Gamma 1":      "#ce93d8",
   "Large Gamma 2":      "#ce93d8",
   "Large Gamma 3":      "#ce93d8",
@@ -1277,31 +1578,130 @@ function levelColor(id) {
 }
 
 /* ── PARSE ──────────────────────────────────────────── */
+// InsiderFinance name → canonical ID mapping
+const IF_NAME_MAP = {
+  "call resistance":      "Call Wall",
+  "put support":          "Put Wall",
+  "hvl":                  "HVL",
+  "1d min":               "1D Min",
+  "1d max":               "1D Max",
+  "volatility trigger":   "Volatility Trigger",
+  "vol trigger":          "Volatility Trigger",
+  "zero gamma":           "Zero Gamma",
+  "large gamma 1":        "Large Gamma 1",
+  "large gamma 2":        "Large Gamma 2",
+  "large gamma 3":        "Large Gamma 3",
+  "large gamma 4":        "Large Gamma 4",
+  "combo 1":              "Combo 1",
+  "combo 2":              "Combo 2",
+  "combo 3":              "Combo 3",
+  "combo 4":              "Combo 4",
+  // 0DTE — kept separate, parsed by parseDte0
+  "call resistance 0dte": "_0DTE_CW",
+  "put support 0dte":     "_0DTE_PW",
+  "hvl 0dte":             "_0DTE_ZG",
+  "gamma wall 0dte":      "_0DTE_GW",
+};
+
+function canonicalize(name) {
+  const key = name.toLowerCase().trim();
+  return IF_NAME_MAP[key] || name;
+}
+
 function parseRaw(raw) {
-  const lines = raw.trim().split("\n").map(l => l.trim()).filter(l => l.length > 0);
   const levels = [];
+
+  // ── Format A: InsiderFinance "Name, Value," (comma-separated key-value pairs)
+  // e.g. "Call Resistance, 7550, Put Support, 7300, HVL, 7390,"
+  const flatTest = raw.replace(/\n/g, ",");
+  const tokens = flatTest.split(",").map(t => t.trim()).filter(t => t.length > 0);
+  // Detect IF format: alternating text/number pairs
+  const looksLikeIF = tokens.length >= 4 && tokens.some(t => /^[A-Za-z]/.test(t)) && tokens.some(t => /^[0-9]/.test(t));
+  if (looksLikeIF) {
+    let i = 0;
+    while (i < tokens.length) {
+      const tok = tokens[i];
+      // Is this token a pure number? skip — it was already consumed as a value
+      if (/^[0-9]/.test(tok) && !isNaN(parseFloat(tok))) { i++; continue; }
+      // Is this a name token? look ahead for a numeric value
+      let j = i + 1;
+      while (j < tokens.length && !/^[0-9]/.test(tokens[j])) j++;
+      if (j < tokens.length) {
+        const name = tokens.slice(i, j).join(", ").trim();
+        const val  = parseFloat(tokens[j]);
+        if (!isNaN(val) && name.length > 0) {
+          const canonical = canonicalize(name);
+          if (!canonical.startsWith("_0DTE_")) {
+            levels.push({ spx: val, es: val, id: canonical, rawName: name });
+          }
+          i = j + 1;
+          continue;
+        }
+      }
+      i++;
+    }
+    if (levels.length > 0) return levels;
+  }
+
+  // ── Format B: tab/comma table SPX / ES / Level ID
+  const lines = raw.trim().split("\n").map(l => l.trim()).filter(l => l.length > 0);
   for (const line of lines) {
-    // skip header
     if (/spx|level/i.test(line) && !/\d{4}/.test(line)) continue;
-    // split by tab or comma
     const parts = line.split(/\t|,/).map(s => s.trim());
     if (parts.length < 3) continue;
     const spx = parseFloat(parts[0]);
     const es  = parseFloat(parts[1]);
-    const id  = parts.slice(2).join(" ").trim();
+    const id  = canonicalize(parts.slice(2).join(" ").trim());
     if (!isNaN(spx) && !isNaN(es) && id.length > 0) {
-      levels.push({spx, es, id});
+      levels.push({ spx, es, id });
     }
   }
   return levels;
 }
 
+// Extract 0DTE levels from InsiderFinance paste and auto-fill dte fields
+function parseDteFromPaste(raw) {
+  const flatTest = raw.replace(/\n/g, ",");
+  const tokens = flatTest.split(",").map(t => t.trim()).filter(t => t.length > 0);
+  let changed = false;
+  let i = 0;
+  while (i < tokens.length) {
+    const tok = tokens[i];
+    if (/^[0-9]/.test(tok)) { i++; continue; }
+    // look ahead for numeric
+    let j = i + 1;
+    while (j < tokens.length && !/^[0-9]/.test(tokens[j])) j++;
+    if (j < tokens.length) {
+      const name = tokens.slice(i, j).join(", ").trim().toLowerCase();
+      const val  = parseFloat(tokens[j]);
+      if (!isNaN(val)) {
+        if (name === "call resistance 0dte" || name === "gamma wall 0dte") {
+          dte.cw = val; const el = document.getElementById('dte-cw'); if (el) el.value = val; changed = true;
+        } else if (name === "put support 0dte") {
+          dte.pw = val; const el = document.getElementById('dte-pw'); if (el) el.value = val; changed = true;
+        } else if (name === "hvl 0dte") {
+          dte.zg = val; const el = document.getElementById('dte-zg'); if (el) el.value = val; changed = true;
+        }
+        i = j + 1; continue;
+      }
+    }
+    i++;
+  }
+  if (changed) renderDteSummary();
+}
+
 function parsePastedLevels() {
   const raw = document.getElementById("paste-area").value;
   gexLevels = parseRaw(raw);
+  parseDteFromPaste(raw); // auto-extract 0DTE levels
+  const total = gexLevels.length + (dte.cw?1:0) + (dte.pw?1:0) + (dte.zg?1:0);
   document.getElementById("parse-status").textContent =
-    gexLevels.length > 0 ? gexLevels.length + " niveaux chargés ✓" : "Format non reconnu";
+    total > 0
+      ? gexLevels.length + " niveaux GEX" + ((dte.cw||dte.pw||dte.zg) ? " + 0DTE auto-détectés ✓" : " chargés ✓")
+      : "Format non reconnu";
   renderStructure();
+  render();
+  drawLevelsChart();
 }
 
 function importCSV(event) {
@@ -1334,6 +1734,7 @@ function onSpotChange() {
   spotES = isNaN(v) ? null : v;
   renderStructure();
   render(); // refresh main analyse panel
+  drawLevelsChart();
 }
 
 /* ── COMPUTE REGIME & SCORE ─────────────────────────── */
@@ -1341,7 +1742,27 @@ function getLevel(id) {
   return gexLevels.find(l => l.id.toLowerCase() === id.toLowerCase()) || null;
 }
 function getLevelByKeyword(kw) {
-  return gexLevels.find(l => l.id.toLowerCase().includes(kw.toLowerCase())) || null;
+  const k = kw.toLowerCase();
+  // Special aliases: HVL acts as Zero Gamma for regime detection
+  if (k === "zero gamma" || k === "hvl") {
+    return gexLevels.find(l => {
+      const id = l.id.toLowerCase();
+      return id === "zero gamma" || id === "hvl";
+    }) || null;
+  }
+  if (k === "trigger" || k === "volatility trigger") {
+    return gexLevels.find(l => {
+      const id = l.id.toLowerCase();
+      return id.includes("trigger");
+    }) || null;
+  }
+  if (k === "call wall") {
+    return gexLevels.find(l => l.id.toLowerCase() === "call wall") || null;
+  }
+  if (k === "put wall") {
+    return gexLevels.find(l => l.id.toLowerCase() === "put wall") || null;
+  }
+  return gexLevels.find(l => l.id.toLowerCase().includes(k)) || null;
 }
 
 function computeStructure() {
@@ -1439,12 +1860,13 @@ function renderStructure() {
     return;
   }
 
+    const zgLabel = s.zeroGamma ? s.zeroGamma.id : "?";
+  const zgVal   = s.zeroGamma ? s.zeroGamma.es : "?";
   const regimeTxt = s.regime === "pos"
-    ? "<span class='regime-pill pill-green'>GAMMA +</span><span class='regime-detail'> Spot au-dessus du Zero Gamma (" + (s.zeroGamma ? s.zeroGamma.es : "?") + "). Marché stabilisant.</span>"
+    ? "<span class='regime-pill pill-green'>GAMMA +</span><span class='regime-detail'> Spot au-dessus du " + zgLabel + " (" + zgVal + "). Marché stabilisant.</span>"
     : s.regime === "neg"
-    ? "<span class='regime-pill pill-red'>GAMMA −</span><span class='regime-detail'> Spot en-dessous du Zero Gamma (" + (s.zeroGamma ? s.zeroGamma.es : "?") + "). Marché volatile.</span>"
-    : "<span class='regime-pill pill-gray'>INCONNU</span><span class='regime-detail'> Zero Gamma non trouvé dans les niveaux.</span>";
-
+    ? "<span class='regime-pill pill-red'>GAMMA −</span><span class='regime-detail'> Spot en-dessous du " + zgLabel + " (" + zgVal + "). Marché volatile.</span>"
+    : "<span class='regime-pill pill-gray'>INCONNU</span><span class='regime-detail'> HVL / Zero Gamma non trouvé dans les niveaux.</span>";
   const flipTxt = s.regimeFlip !== null
     ? " &nbsp;<span class='regime-pill pill-yellow'>Flip à " + (s.zeroGamma ? s.zeroGamma.es : "?") + " (" + s.regimeFlip.toFixed(0) + "pt)</span>"
     : "";
@@ -1454,24 +1876,26 @@ function renderStructure() {
   // Key levels
   document.getElementById("key-levels-grid").style.display = "";
   const keyList = document.getElementById("key-levels-list");
-  const keyLevs = [
-    {lvl: s.callWall,   d: s.dCW, p: s.pCW, label: "Call Wall"},
-    {lvl: s.putWall,    d: s.dPW, p: s.pPW, label: "Put Wall"},
-    {lvl: s.zeroGamma,  d: s.dZG, p: null,  label: "Zero Gamma"},
-    {lvl: s.volTrigger, d: s.dVT, p: null,  label: "Vol Trigger"},
-  ];
-  keyList.innerHTML = keyLevs.map(({lvl, d, p, label}) => {
-    if (!lvl) return '<div class="level-row"><span class="level-name" style="color:var(--text3)">' + label + '</span><span style="font-size:10px;color:var(--text3)">n/a</span></div>';
-    const col = levelColor(lvl.id);
-    const absDist = d !== null ? Math.abs(d) : null;
+  // Show ALL levels sorted by price desc, including 0DTE
+  const allDisplay = [...s.allSorted];
+  // Add 0DTE levels
+  if (dte.cw) allDisplay.push({es: dte.cw, spx: dte.cw, id: "CW 0DTE"});
+  if (dte.pw) allDisplay.push({es: dte.pw, spx: dte.pw, id: "PW 0DTE"});
+  if (dte.zg) allDisplay.push({es: dte.zg, spx: dte.zg, id: "ZG 0DTE"});
+  allDisplay.sort((a, b) => b.es - a.es);
+  keyList.innerHTML = allDisplay.map(lvl => {
+    const col = lvl.id.includes("0DTE") ? (lvl.id.startsWith("CW") ? "#ff4757" : lvl.id.startsWith("PW") ? "#00d084" : "#1e90ff") : levelColor(lvl.id);
+    const d = spotES ? +(spotES - lvl.es).toFixed(0) : null;
+    const p = spotES ? +((spotES - lvl.es) / spotES * 100).toFixed(2) : null;
     let distCls = "dist-na", distTxt = "—";
     if (d !== null) {
-      distTxt = (d > 0 ? "+" : "") + d.toFixed(0) + "pt";
-      if (p !== null) distTxt += " (" + (p > 0 ? "+" : "") + p.toFixed(2) + "%)";
-      distCls = absDist < 20 ? "dist-near" : d > 0 ? "dist-above" : "dist-below";
+      distTxt = (d > 0 ? "+" : "") + d + "pt";
+      distCls = Math.abs(d) < 20 ? "dist-near" : d > 0 ? "dist-above" : "dist-below";
     }
+    const is0dte = lvl.id.includes("0DTE");
     return '<div class="level-row">'
-      + '<span class="level-name" style="color:' + col + '">' + label + '</span>'
+      + '<span class="level-name" style="color:' + col + (is0dte ? ";font-style:italic" : "") + '">'
+      + lvl.id + (is0dte ? ' <span style="font-size:8px;opacity:0.7">0DTE</span>' : '') + '</span>'
       + '<span class="level-price">' + lvl.es + '</span>'
       + '<span class="level-dist ' + distCls + '">' + distTxt + '</span>'
       + '</div>';
@@ -1526,6 +1950,17 @@ function buildStructSummary() {
   if (s.nearestMagnet)
     pills.push('<span class="struct-pill">Aimant: ' + s.nearestMagnet.id + ' ' + s.nearestMagnet.es + '</span>');
   pills.push('<span class="struct-pill ' + (s.score >= 7 ? "pill-up" : s.score >= 5 ? "pill-warn" : "pill-dn") + '">Score ' + s.score + '/10</span>');
+  // Add 0DTE pills
+  if (dte.cw && spotES) {
+    const d = +(spotES - dte.cw).toFixed(0);
+    const cls = Math.abs(d) <= 20 ? 'pill-warn' : d < 0 ? 'pill-up' : 'pill-dn';
+    pills.push('<span class="struct-pill ' + cls + '" style="border-color:rgba(255,211,42,0.4);color:var(--yellow)">CW0DTE ' + dte.cw + ' (' + (d>0?'+':'') + d + 'pt)</span>');
+  }
+  if (dte.pw && spotES) {
+    const d = +(spotES - dte.pw).toFixed(0);
+    const cls = Math.abs(d) <= 20 ? 'pill-warn' : d > 0 ? 'pill-up' : 'pill-dn';
+    pills.push('<span class="struct-pill ' + cls + '" style="border-color:rgba(255,211,42,0.4);color:var(--yellow)">PW0DTE ' + dte.pw + ' (' + (d>0?'+':'') + d + 'pt)</span>');
+  }
   if (pills.length === 0) return "";
   return '<div class="analyse-tag tag-sortie" style="margin-top:2px;flex-shrink:0">STRUCT</div>'
     + '<div style="flex:1"><div class="struct-summary">' + pills.join("") + '</div></div>';
