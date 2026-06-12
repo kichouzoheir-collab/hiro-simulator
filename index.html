@@ -281,6 +281,84 @@ canvas.mini-chart{width:100%;display:block}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+
+/* ── ANALYSE PRIMAIRE / SECONDAIRE ───────────────── */
+.analyse-panel{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:12px}
+.analyse-primary{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;user-select:none}
+.analyse-primary:hover{background:var(--bg4)}
+.analyse-verdict{flex:1}
+.analyse-verdict-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.analyse-verdict-text{font-size:22px;font-weight:700;color:var(--text);line-height:1.2}
+@media(max-width:700px){.analyse-verdict-text{font-size:18px}}
+.analyse-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.analyse-chevron{font-family:var(--mono);font-size:11px;color:var(--text3);transition:transform .2s;margin-top:4px}
+.analyse-chevron.open{transform:rotate(180deg)}
+.analyse-secondary{padding:16px 22px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--border)}
+.analyse-secondary.hidden{display:none}
+.analyse-secondary-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
+.analyse-secondary-text{font-size:13px;color:var(--text2);line-height:1.65}
+@media(max-width:700px){.analyse-secondary-text{font-size:12px}}
+.analyse-row{display:flex;gap:10px;align-items:flex-start}
+.analyse-tag{font-family:var(--mono);font-size:8px;font-weight:700;padding:3px 7px;border-radius:4px;white-space:nowrap;margin-top:2px;flex-shrink:0;letter-spacing:0.06em;text-transform:uppercase}
+.tag-gamma{background:var(--gray-mid);color:var(--text2)}
+.tag-notional{background:var(--yellow-dim);color:var(--yellow)}
+.tag-flow{background:var(--blue-dim);color:var(--blue)}
+.tag-sortie{background:var(--red-dim);color:var(--red)}
+
+/* ── STRUCTURE / GEX LEVELS ─────────────────────────── */
+.struct-top{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.spot-input-wrap{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:6px 12px;flex:1;min-width:160px}
+.spot-input-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap}
+.spot-input{background:none;border:none;outline:none;font-family:var(--mono);font-size:16px;font-weight:700;color:var(--green);width:100%;min-width:80px}
+.spot-input::placeholder{color:var(--text3)}
+.spot-search-btn{font-family:var(--mono);font-size:10px;font-weight:700;padding:6px 12px;border-radius:var(--radius);background:var(--blue-dim);color:var(--blue);border:1px solid rgba(30,144,255,0.3);cursor:pointer;white-space:nowrap;transition:all .12s;text-decoration:none;display:flex;align-items:center;gap:5px}
+.spot-search-btn:hover{background:rgba(30,144,255,0.2)}
+.import-wrap{display:flex;gap:8px;flex-wrap:wrap}
+.import-btn{font-family:var(--mono);font-size:10px;font-weight:700;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .12s}
+.import-btn:hover{border-color:var(--green);color:var(--green)}
+.import-area{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-family:var(--mono);font-size:11px;color:var(--text2);resize:vertical;min-height:80px;outline:none;transition:border-color .15s;display:none}
+.import-area:focus{border-color:var(--border2)}
+.import-area.visible{display:block}
+.struct-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:700px){.struct-grid{grid-template-columns:1fr}}
+.struct-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+.struct-card-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.level-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.level-row:last-child{border-bottom:none}
+.level-name{font-family:var(--mono);font-size:11px;font-weight:700}
+.level-price{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text)}
+.level-dist{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:10px}
+.dist-above{background:var(--green-dim);color:var(--green)}
+.dist-below{background:var(--red-dim);color:var(--red)}
+.dist-near{background:var(--yellow-dim);color:var(--yellow)}
+.dist-na{background:var(--gray-mid);color:var(--text3)}
+/* regime bar */
+.regime-bar{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px}
+.regime-bar-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.regime-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.regime-pill{font-family:var(--mono);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px}
+.pill-green{background:var(--green-mid);color:var(--green)}
+.pill-red{background:var(--red-mid);color:var(--red)}
+.pill-yellow{background:var(--yellow-mid);color:var(--yellow)}
+.pill-gray{background:var(--gray-mid);color:var(--text3)}
+.regime-detail{font-size:12px;color:var(--text2)}
+/* levels table */
+.levels-table{width:100%;border-collapse:collapse;margin-top:4px}
+.levels-table th{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.levels-table td{font-size:11px;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.levels-table tr:last-child td{border-bottom:none}
+.levels-table tr.highlight-row td{background:rgba(255,211,42,0.05)}
+/* score badge */
+.score-badge{display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 16px;margin-bottom:10px}
+.score-num{font-family:var(--mono);font-size:28px;font-weight:700}
+.score-label{font-size:12px;color:var(--text2)}
+/* struct summary in analyse panel */
+.struct-summary{margin-top:10px;padding:10px 14px;background:var(--bg4);border-radius:var(--radius);display:flex;flex-wrap:wrap;gap:8px}
+.struct-pill{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:10px;border:1px solid var(--border2);color:var(--text2)}
+.struct-pill.pill-up{border-color:rgba(0,208,132,0.4);color:var(--green);background:var(--green-dim)}
+.struct-pill.pill-dn{border-color:rgba(255,71,87,0.4);color:var(--red);background:var(--red-dim)}
+.struct-pill.pill-warn{border-color:rgba(255,211,42,0.4);color:var(--yellow);background:var(--yellow-dim)}
+
 </style>
 </head>
 <body>
@@ -304,6 +382,7 @@ canvas.mini-chart{width:100%;display:block}
 
 <div class="tabs">
   <button class="tab active" onclick="showTab('sim')">Simulateur</button>
+  <button class="tab" onclick="showTab('struct')">Structure GEX</button>
   <button class="tab" onclick="showTab('level')">Niveau vs direction</button>
   <button class="tab" onclick="showTab('gamma')">Gamma + vs −</button>
   <button class="tab" onclick="showTab('notional')">Notional 1H</button>
@@ -477,6 +556,74 @@ canvas.mini-chart{width:100%;display:block}
     <div id="result-summary-box"></div>
   </div>
 
+
+  <!-- STRUCTURE TAB -->
+  <div class="page" id="tab-struct">
+    <div class="page-title">Structure GEX</div>
+
+    <!-- Spot input + search -->
+    <div class="struct-top">
+      <div class="spot-input-wrap">
+        <div class="spot-input-label">Spot ES</div>
+        <input type="number" class="spot-input" id="spot-input" placeholder="7450" step="0.25" oninput="onSpotChange()">
+      </div>
+      <a class="spot-search-btn" href="https://finance.yahoo.com/quote/ES%3DF/" target="_blank" title="Ouvrir Yahoo Finance ES Futures">
+        🔍 Prix ES
+      </a>
+      <a class="spot-search-btn" href="https://finance.yahoo.com/quote=%5EGSPC/" target="_blank" title="Ouvrir Yahoo Finance SPX">
+        🔍 SPX
+      </a>
+    </div>
+
+    <!-- Import section -->
+    <div style="margin-bottom:14px">
+      <div class="import-wrap">
+        <button class="import-btn" onclick="toggleImport('paste')">📋 Coller les niveaux</button>
+        <button class="import-btn" onclick="document.getElementById('csv-file-input').click()">📂 Importer CSV</button>
+        <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="importCSV(event)">
+        <button class="import-btn" onclick="clearLevels()" style="color:var(--red)">✕ Effacer</button>
+      </div>
+      <textarea id="paste-area" class="import-area" placeholder="Coller ici — format :&#10;SPX&#9;/ES&#9;Level ID&#10;7500&#9;7567&#9;Call Wall&#10;7351&#9;7418&#9;Zero Gamma&#10;&#10;Séparateur : tabulation ou virgule" oninput="parsePastedLevels()"></textarea>
+      <div id="parse-status" style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:5px"></div>
+    </div>
+
+    <!-- Régime dynamique -->
+    <div class="regime-bar" id="regime-bar">
+      <div class="regime-bar-title">Régime GEX détecté</div>
+      <div id="regime-content" style="color:var(--text3);font-family:var(--mono);font-size:11px">
+        Entrer le spot ES et les niveaux pour calculer le régime.
+      </div>
+    </div>
+
+    <!-- Niveaux clés + distances -->
+    <div class="struct-grid" id="key-levels-grid" style="display:none">
+      <div class="struct-card">
+        <div class="struct-card-title">Niveaux clés</div>
+        <div id="key-levels-list"></div>
+      </div>
+      <div class="struct-card">
+        <div class="struct-card-title">Score de conviction</div>
+        <div id="score-block"></div>
+      </div>
+    </div>
+
+    <!-- Tableau complet — collapsed by default -->
+    <div class="struct-card" id="full-table-card" style="display:none">
+      <div class="struct-card-title" onclick="toggleFullTable()" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none">
+        <span>Tous les niveaux</span>
+        <span id="full-table-chevron" style="font-family:var(--mono);font-size:10px;color:var(--text3);transition:transform .2s">▶</span>
+      </div>
+      <div id="full-table-body" style="display:none;margin-top:10px">
+        <table class="levels-table" id="levels-table">
+          <thead><tr>
+            <th>Level</th><th>SPX</th><th>/ES</th><th>Distance</th><th>Zone</th>
+          </tr></thead>
+          <tbody id="levels-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <!-- LEVEL TAB -->
   <div class="page" id="tab-level">
     <div class="page-title">Niveau vs direction</div>
@@ -581,16 +728,72 @@ let isDark = true;
    SCENARIOS / COPY
 ═══════════════════════════════ */
 const scenarios={
-  'up_up':    {cls:'bull',titre:'Double pression haussière',flow:'Les deux montent → MMs achètent spot des deux côtés.',action:'Setup long fort. Double flux entrant.'},
-  'up_flat':  {cls:'bull',titre:'Haussier propre',flow:'Calls montent, puts neutres → MMs achètent spot pour hedger les calls.',action:'Entrée long valide. Signal clair.'},
-  'up_dn':    {cls:'warn',titre:'Piège — explosion de vol',flow:'Calls montent ET puts descendent = achat des deux côtés.',action:'Direction incertaine. Ne pas trader. Vol imminente.'},
-  'flat_up':  {cls:'bull',titre:'Dénouement de puts',flow:'Puts montent = MMs rachètent leur hedge short → pression haussière.',action:'Rebond possible. Attendre confirmation calls.'},
-  'flat_flat':{cls:'neut',titre:'Neutre — aucun signal',flow:'Aucune pression directionnelle. MMs ne hedgent rien.',action:'Ne pas trader. Attendre un catalyseur.'},
-  'flat_dn':  {cls:'bear',titre:'Baissier propre',flow:'Puts descendent = achat massif de puts → MMs vendent spot.',action:'Entrée short valide. Signal clair.'},
-  'dn_up':    {cls:'bull',titre:'Rebond / dénouement',flow:'Puts montent (dénouement) + calls lâchent → MMs rachètent.',action:'Rebond en cours. Sortir les shorts.'},
-  'dn_flat':  {cls:'bear',titre:'Baissier léger',flow:'Dénouement de calls → MMs vendent le delta long accumulé.',action:'Short possible, faible conviction. Petite taille.'},
-  'dn_dn':    {cls:'bear',titre:'Distribution / capitulation',flow:'Les deux descendent → vente de calls + achat de puts.',action:'Signal baissier majeur. Tout le monde sort.'},
+  'up_up':    {cls:'bull',titre:'Double pression haussière',flow:'Les deux montent → MMs achètent spot des deux côtés.'},
+  'up_flat':  {cls:'bull',titre:'Haussier propre',flow:'Calls montent, puts neutres → MMs achètent spot pour hedger les calls.'},
+  'up_dn':    {cls:'warn',titre:'Piège — explosion de vol',flow:'Calls montent ET puts descendent = achat des deux côtés.'},
+  'flat_up':  {cls:'bull',titre:'Dénouement de puts',flow:'Puts montent = MMs rachètent leur hedge short → pression haussière.'},
+  'flat_flat':{cls:'neut',titre:'Neutre — aucun signal',flow:'Aucune pression directionnelle. MMs ne hedgent rien.'},
+  'flat_dn':  {cls:'bear',titre:'Baissier propre',flow:'Puts descendent = achat massif de puts → MMs vendent spot.'},
+  'dn_up':    {cls:'bull',titre:'Rebond / dénouement',flow:'Puts montent (dénouement) + calls lâchent → MMs rachètent.'},
+  'dn_flat':  {cls:'bear',titre:'Baissier léger',flow:'Dénouement de calls → MMs vendent le delta long accumulé.'},
+  'dn_dn':    {cls:'bear',titre:'Distribution / capitulation',flow:'Les deux descendent → vente de calls + achat de puts.'},
 };
+// Action varie selon gamma — même scénario HIRO = amplitude différente
+const gammaAction={
+  neg:{
+    bull:"Long. Gamma − : rally auto-alimenté, laisser courir. Ne pas couper tôt.",
+    bear:"Short. Gamma − : sell-off qui s’emballe. Tenir la position, stops larges.",
+    neut:"Ne pas trader. Gamma − : quand le move part il sera violent — attendre direction claire.",
+    warn:"Hors marché. Gamma − amplifie les deux côtés — risque max dans ce scénario.",
+  },
+  pos:{
+    bull:"Long avec target serré. Gamma + : MMs vendent en face, la hausse sera amortie.",
+    bear:"Short scalp uniquement. Gamma + : MMs achètent en face, rebond probable.",
+    neut:"Attendre. Gamma + comprime le range — breakout nécessaire avant d’entrer.",
+    warn:"Petit size. Gamma + contient la vol — moves limités dans les deux sens.",
+  },
+};
+
+// Analyse secondaire : raisonnement structuré gamma → notional → flow
+function buildSecondary(cls, gammaS, biasS, dirS, notionalS, notionalV, flow) {
+  const gammaCtx = {
+    neg: "Gamma − : les MMs amplifient chaque move. Pas d’amortisseur — ce qui part, part vite.",
+    pos: "Gamma + : les MMs font l’inverse du marché. Chaque move est ralenti, les extrêmes sont vendus/achetés.",
+  };
+  const notionalCtx = {
+    above_up:   "Notional à " + notionalV + "M au-dessus de 0 et monte → biais haussier institutionnel qui s’amplifie en temps réel.",
+    above_flat: "Notional à " + notionalV + "M au-dessus de 0 et flat → biais haussier stable, pas d’accélération.",
+    above_dn:   "Notional à " + notionalV + "M au-dessus de 0 mais descend → biais haussier qui s’érode, surveiller un flip.",
+    below_dn:   "Notional à " + notionalV + "M en-dessous de 0 et descend → biais baissier institutionnel qui s’amplifie.",
+    below_flat: "Notional à " + notionalV + "M en-dessous de 0 et flat → biais baissier stable, pas d’accélération.",
+    below_up:   "Notional à " + notionalV + "M en-dessous de 0 mais remonte → biais baissier qui s’allège, possible retournement.",
+  };
+  const intensityCtx = {
+    neut: "Intensité faible (bruit) — flux insuffisant pour valider le setup.",
+    mod:  "Intensité modérée (signal) — flux institutionnel réel, setup valide.",
+    str:  "Intensité violente (>500M) — flux majeur, conviction maximale.",
+  };
+  const exitCtx = {
+    bull: {
+      neg: "Signal de sortie : notional commence à descendre, ou calls/puts flippent à la baisse.",
+      pos: "Signal de sortie : price s’approche du Call Wall, ou calls commencent à descendre.",
+    },
+    bear: {
+      neg: "Signal de sortie : notional commence à remonter, ou puts flippent à la hausse.",
+      pos: "Signal de sortie : price s’approche du Put Wall, ou puts commencent à monter.",
+    },
+    neut: { neg: "Attendre un signal directionnel clair avant toute entrée.", pos: "Attendre un breakout du range comprimé." },
+    warn: { neg: "Rester hors marché jusqu’à résolution de l’ambiguité directionnelle.", pos: "Aucune position. Moves limités dans les deux sens." },
+  };
+  const bk = biasS + "_" + dirS;
+  return {
+    gamma:    gammaCtx[gammaS],
+    notional: (notionalCtx[bk] || "") + " " + intensityCtx[notionalS],
+    flow:     flow,
+    sortie:   (exitCtx[cls] || {})[gammaS] || "",
+  };
+}
+
 const gammaMsg={
   neg:{bull:'Gamma − : rally amplifié. Laisser courir.',bear:'Gamma − : sell-off auto-alimenté. Stops larges.',neut:'Gamma − : quand le move part, il sera violent.',warn:'Gamma − : vol amplifiée. Danger des deux côtés.'},
   pos:{bull:'Gamma + : hausse amortie. Target proche.',bear:'Gamma + : baisse amortie. Rebond probable.',neut:'Gamma + : range comprimé. Attendre breakout.',warn:'Gamma + : vol contenue. Moves limités.'},
@@ -700,6 +903,7 @@ function drawChart(canvasId, lines, opts) {
   const canvas=document.getElementById(canvasId); if(!canvas)return;
   const dpr=window.devicePixelRatio||1;
   const rect=canvas.getBoundingClientRect();
+  if(rect.width===0)return; // canvas not visible — don't overwrite dimensions
   canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
   const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
   const W=rect.width, H=rect.height;
@@ -815,6 +1019,116 @@ function updateBars(strength,cls){
 /* ═══════════════════════════════
    RENDER
 ═══════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════
+   CONTEXTUAL ACTION — enrichit le verdict avec les niveaux GEX
+   Retourne { action, warnings, target, exit, scoreLabel, scoreCls }
+═══════════════════════════════════════════════════ */
+function buildContextualAction(cls, baseAction) {
+  const s = computeStructure();
+  if (!s || !spotES) {
+    return { action: baseAction, warnings: [], target: null, exit: null, scoreLabel: null, scoreCls: null };
+  }
+
+  const warnings = [];
+  let target = null;
+  let exitNote = null;
+  let actionOverride = baseAction;
+
+  const cw = s.callWall;
+  const pw = s.putWall;
+  const zg = s.zeroGamma;
+  const vt = s.volTrigger;
+
+  // ── BULL scenarios ────────────────────────────────
+  if (cls === "bull") {
+    // Call Wall proximity
+    if (cw) {
+      const dCW = +(spotES - cw.es).toFixed(0);
+      if (dCW < 0 && Math.abs(dCW) <= 20) {
+        warnings.push("⚠ Call Wall à " + cw.es + " (" + Math.abs(dCW) + "pt) — résistance majeure imminente. Réduire la taille.");
+        actionOverride = "Long prudent — Call Wall " + cw.es + " (" + Math.abs(dCW) + "pt). Ne pas forcer la cassure.";
+      } else if (dCW > 0) {
+        warnings.push("⚠ Spot au-dessus du Call Wall (" + cw.es + "). Zone de rejet potentiel.");
+        actionOverride = "Attention — Spot déjà au-dessus du Call Wall (" + cw.es + "). Signal haussier à prendre avec précaution.";
+      } else {
+        target = "Target naturel : Call Wall " + cw.es + " (+ " + Math.abs(dCW) + "pt)";
+        actionOverride = baseAction + " Objectif : CW " + cw.es + " (+ " + Math.abs(dCW) + "pt).";
+      }
+    }
+    // Vol Trigger — scalp: only block if very close below (<20pt)
+    if (vt) {
+      const dVT = +(spotES - vt.es).toFixed(0);
+      if (dVT < 0 && Math.abs(dVT) <= 20) {
+        warnings.push("⚠ Vol Trigger à " + vt.es + " (" + Math.abs(dVT) + "pt). Résistance immédiate — surveiller la réaction.");
+        actionOverride = "Long scalp prudent — Vol Trigger " + vt.es + " (" + Math.abs(dVT) + "pt) en résistance proche.";
+      } else if (dVT < 0 && Math.abs(dVT) <= 50) {
+        warnings.push("Vol Trigger " + vt.es + " (" + Math.abs(dVT) + "pt) — premier obstacle, garder en tête pour sizing.");
+      } else if (dVT < 0) {
+        warnings.push("Vol Trigger " + vt.es + " (" + Math.abs(dVT) + "pt) — niveau de référence pour extension.");
+      } else if (dVT <= 15) {
+        warnings.push("⚠ Vol Trigger " + vt.es + " tout juste dépassé (" + dVT + "pt). Confirmer le maintien au-dessus.");
+      }
+    }
+    // Zero Gamma — above = gamma+, below = gamma-
+    if (zg) {
+      const dZG = +(spotES - zg.es).toFixed(0);
+      if (dZG < 0) {
+        warnings.push("⚠ Spot sous le Zero Gamma (" + zg.es + "). Régime volatil confirmé — moves amplifiés mais dans les deux sens.");
+      }
+    }
+    // Exit note
+    if (cw) exitNote = "Sortie : approche du Call Wall " + cw.es + " ou retournement du notional.";
+    else if (zg) exitNote = "Sortie : cassure sous le Zero Gamma " + zg.es + " ou retournement du notional.";
+  }
+
+  // ── BEAR scenarios ────────────────────────────────
+  else if (cls === "bear") {
+    // Put Wall proximity
+    if (pw) {
+      const dPW = +(spotES - pw.es).toFixed(0);
+      if (dPW > 0 && dPW <= 20) {
+        warnings.push("⚠ Put Wall à " + pw.es + " (" + dPW + "pt) — support majeur imminent. Rebond possible.");
+        actionOverride = "Short prudent — Put Wall " + pw.es + " (" + dPW + "pt). Attention au rebond des dealers.";
+      } else if (dPW < 0) {
+        warnings.push("⚠ Spot déjà sous le Put Wall (" + pw.es + "). Accélération possible mais risque de rebond violent.");
+        actionOverride = baseAction + " Spot sous le PW " + pw.es + " — extension possible, stops larges.";
+      } else {
+        target = "Target naturel : Put Wall " + pw.es + " (- " + dPW + "pt)";
+        actionOverride = baseAction + " Objectif : PW " + pw.es + " (- " + dPW + "pt).";
+      }
+    }
+    // Vol Trigger — below = confirms bear
+    if (vt) {
+      const dVT = +(spotES - vt.es).toFixed(0);
+      if (dVT < 0 && Math.abs(dVT) <= 15) {
+        warnings.push("⚠ Spot vient de casser sous le Vol Trigger (" + vt.es + "). Signal baissier confirmé par la structure.");
+        actionOverride = "Short confirmé — cassure du Vol Trigger " + vt.es + ". Accélération probable en gamma −.";
+      }
+    }
+    if (pw) exitNote = "Sortie : approche du Put Wall " + pw.es + " ou rebond du notional.";
+    else if (zg) exitNote = "Sortie : cassure au-dessus du Zero Gamma " + zg.es + " ou rebond du notional.";
+  }
+
+  // ── NEUTRAL / WARN ────────────────────────────────
+  else if (cls === "neut" || cls === "warn") {
+    if (zg) {
+      const dZG = +(spotES - zg.es).toFixed(0);
+      warnings.push("Spot à " + Math.abs(dZG) + "pt du Zero Gamma (" + zg.es + "). Surveiller le franchissement.");
+    }
+    if (vt) {
+      const dVT = +(spotES - vt.es).toFixed(0);
+      warnings.push("Vol Trigger " + vt.es + " (" + (dVT > 0 ? "+" : "") + dVT + "pt) — niveau déclencheur à surveiller.");
+    }
+  }
+
+  // Score label
+  const scoreLabel = "Score struct. " + s.score + "/10";
+  const scoreCls = s.score >= 7 ? "pill-green" : s.score >= 5 ? "pill-yellow" : "pill-red";
+
+  return { action: actionOverride, warnings, target, exit: exitNote, scoreLabel, scoreCls };
+}
+
 function render(){
   const key=callState+'_'+putState;
   const s=scenarios[key];
@@ -822,37 +1136,68 @@ function render(){
   const n=notionalMsg[notionalState][s.cls];
   const bk=biasState+'_'+dirState;
   const b=(biasMsg[bk]||{})[s.cls]||'';
+  const baseAction=gammaAction[gammaState][s.cls];
+  const ctx = buildContextualAction(s.cls, baseAction); // enrichi avec niveaux GEX
+  const action = ctx.action;
   const badgeCls={bull:'badge-bull',bear:'badge-bear',neut:'badge-neut',warn:'badge-warn'}[s.cls];
   const badgeTxt={bull:'HAUSSIER',bear:'BAISSIER',neut:'NEUTRE',warn:'ATTENTION'}[s.cls];
   const actionIcon={bull:'icon-action',bear:'icon-action-bear',neut:'icon-action-neut',warn:'icon-action-warn'}[s.cls];
   const summaryBorderColor={bull:'var(--green)',bear:'var(--red)',neut:'var(--text3)',warn:'var(--yellow)'}[s.cls];
 
-  // Main result panel (top)
-  document.getElementById('result-box').innerHTML=`
-    <div class="result-panel">
-      <div class="result-header">
-        <div class="result-title">${s.titre}</div>
-        <div class="result-badge ${badgeCls}">${badgeTxt}</div>
+  // Build secondary analysis
+  const sec = buildSecondary(s.cls, gammaState, biasState, dirState, notionalState, notionalValue, s.flow);
+
+  // Build contextual blocks for template
+  const warnHtml = ctx.warnings.length > 0
+    ? ctx.warnings.map(w => '<div class="analyse-row"><div class="analyse-tag" style="background:var(--yellow-dim);color:var(--yellow);flex-shrink:0">⚠</div><div class="analyse-secondary-text" style="color:var(--yellow)">' + w + '</div></div>').join("")
+    : "";
+  const targetHtml = ctx.target
+    ? '<div class="analyse-row"><div class="analyse-tag" style="background:var(--green-dim);color:var(--green);flex-shrink:0">TARGET</div><div class="analyse-secondary-text">' + ctx.target + '</div></div>'
+    : "";
+  const exitCtxHtml = ctx.exit
+    ? '<div class="analyse-row"><div class="analyse-tag tag-sortie">SORTIE</div><div class="analyse-secondary-text">' + ctx.exit + '</div></div>'
+    : '<div class="analyse-row"><div class="analyse-tag tag-sortie">SORTIE</div><div class="analyse-secondary-text">' + sec.sortie + '</div></div>';
+  const scoreHtml = ctx.scoreLabel
+    ? '<span class="regime-pill ' + ctx.scoreCls + '" style="font-size:10px;margin-top:2px">' + ctx.scoreLabel + '</span>'
+    : "";
+
+  const panelHtml = `
+    <div class="analyse-panel">
+      <div class="analyse-primary" onclick="toggleSecondary(this)">
+        <div class="analyse-verdict">
+          <div class="analyse-verdict-label">Analyse — ${s.titre}</div>
+          <div class="analyse-verdict-text" style="color:${summaryBorderColor}">${action}</div>
+        </div>
+        <div class="analyse-right">
+          <div class="result-badge ${badgeCls}">${badgeTxt}</div>
+          ${scoreHtml}
+          <div class="analyse-chevron open">▼</div>
+        </div>
       </div>
-      <div class="result-body">
-        <div class="result-row"><div class="result-icon icon-flow">FLUX</div><div class="result-text">${s.flow}</div></div>
-        <div class="result-row"><div class="result-icon icon-gamma">GAMMA</div><div class="result-text">${g}</div></div>
-        <div class="result-row"><div class="result-icon icon-notional">INTENSITÉ</div><div class="result-text">${n} <span style="color:var(--text3);font-size:11px">(${notionalValue}M)</span></div></div>
-        <div class="result-row"><div class="result-icon icon-bias">BIAIS 1H</div><div class="result-text">${b}</div></div>
-        <div class="result-row"><div class="result-icon ${actionIcon}">ACTION</div><div class="result-text"><strong>${s.action}</strong></div></div>
+      <div class="analyse-secondary">
+        ${warnHtml}
+        ${targetHtml}
+        <div class="analyse-secondary-title" style="margin-top:${warnHtml||targetHtml?'8px':'0'}">Raisonnement</div>
+        <div class="analyse-row"><div class="analyse-tag tag-gamma">GAMMA</div><div class="analyse-secondary-text">${sec.gamma}</div></div>
+        <div class="analyse-row"><div class="analyse-tag tag-notional">NOTIONAL</div><div class="analyse-secondary-text">${sec.notional}</div></div>
+        <div class="analyse-row"><div class="analyse-tag tag-flow">FLOW</div><div class="analyse-secondary-text">${sec.flow}</div></div>
+        ${exitCtxHtml}
       </div>
     </div>`;
 
-  // Summary repeated below charts
-  document.getElementById('result-summary-box').innerHTML=`
-    <div class="result-summary" style="border-left:3px solid ${summaryBorderColor}">
-      <div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Action</div>
-        <div class="summary-action">${s.action}</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:4px">${s.flow}</div>
-      </div>
-      <div class="summary-badge ${badgeCls}">${badgeTxt}</div>
-    </div>`;
+  document.getElementById('result-box').innerHTML = panelHtml;
+  document.getElementById('result-summary-box').innerHTML = '';
+  // Append struct summary after secondary section if available
+  const structHtml = buildStructSummary();
+  if (structHtml) {
+    const secDiv = document.querySelector('#result-box .analyse-secondary');
+    if (secDiv) {
+      const row = document.createElement('div');
+      row.className = 'analyse-row';
+      row.innerHTML = structHtml;
+      secDiv.appendChild(row);
+    }
+  }
 
   updateBars(strengthFromSlider(notionalValue), s.cls);
   refreshCharts();
@@ -888,8 +1233,9 @@ function pickDir(val){
 function showTab(t){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
-  document.querySelectorAll('.tab').forEach((b,i)=>{b.classList.toggle('active',['sim','level','gamma','notional'][i]===t);});
+  document.querySelectorAll('.tab').forEach((b,i)=>{b.classList.toggle('active',['sim','struct','level','gamma','notional'][i]===t);});
   if(t==='sim')setTimeout(refreshCharts,50);
+  if(t==='struct')renderStructure();
 }
 function toggleTheme(){
   isDark=!isDark;
@@ -898,6 +1244,307 @@ function toggleTheme(){
   document.getElementById('theme-label').textContent=isDark?'DARK':'LIGHT';
   updateSliderUI(notionalValue);
   setTimeout(refreshCharts,30);
+}
+
+
+
+/* ═══════════════════════════════
+   GEX LEVELS STATE
+═══════════════════════════════ */
+let gexLevels = []; // [{spx, es, id}]
+let spotES = null;
+
+const LEVEL_COLORS = {
+  "Call Wall":          "#ff4757",
+  "Put Wall":           "#00d084",
+  "Zero Gamma":         "#1e90ff",
+  "Volatility Trigger": "#ffd32a",
+  "Vol Trigger":        "#ffd32a",
+  "Large Gamma 1":      "#ce93d8",
+  "Large Gamma 2":      "#ce93d8",
+  "Large Gamma 3":      "#ce93d8",
+  "Large Gamma 4":      "#ce93d8",
+  "Combo 1":            "#8b9099",
+  "Combo 2":            "#8b9099",
+  "Combo 3":            "#8b9099",
+  "Combo 4":            "#8b9099",
+};
+
+const KEY_LEVELS = ["Call Wall","Put Wall","Zero Gamma","Volatility Trigger","Vol Trigger"];
+
+function levelColor(id) {
+  return LEVEL_COLORS[id] || "#555d66";
+}
+
+/* ── PARSE ──────────────────────────────────────────── */
+function parseRaw(raw) {
+  const lines = raw.trim().split("\n").map(l => l.trim()).filter(l => l.length > 0);
+  const levels = [];
+  for (const line of lines) {
+    // skip header
+    if (/spx|level/i.test(line) && !/\d{4}/.test(line)) continue;
+    // split by tab or comma
+    const parts = line.split(/\t|,/).map(s => s.trim());
+    if (parts.length < 3) continue;
+    const spx = parseFloat(parts[0]);
+    const es  = parseFloat(parts[1]);
+    const id  = parts.slice(2).join(" ").trim();
+    if (!isNaN(spx) && !isNaN(es) && id.length > 0) {
+      levels.push({spx, es, id});
+    }
+  }
+  return levels;
+}
+
+function parsePastedLevels() {
+  const raw = document.getElementById("paste-area").value;
+  gexLevels = parseRaw(raw);
+  document.getElementById("parse-status").textContent =
+    gexLevels.length > 0 ? gexLevels.length + " niveaux chargés ✓" : "Format non reconnu";
+  renderStructure();
+}
+
+function importCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById("paste-area").value = e.target.result;
+    document.getElementById("paste-area").classList.add("visible");
+    parsePastedLevels();
+  };
+  reader.readAsText(file);
+}
+
+function toggleImport(mode) {
+  const area = document.getElementById("paste-area");
+  area.classList.toggle("visible");
+  if (area.classList.contains("visible")) area.focus();
+}
+
+function clearLevels() {
+  gexLevels = [];
+  document.getElementById("paste-area").value = "";
+  document.getElementById("parse-status").textContent = "";
+  renderStructure();
+}
+
+function onSpotChange() {
+  const v = parseFloat(document.getElementById("spot-input").value);
+  spotES = isNaN(v) ? null : v;
+  renderStructure();
+  render(); // refresh main analyse panel
+}
+
+/* ── COMPUTE REGIME & SCORE ─────────────────────────── */
+function getLevel(id) {
+  return gexLevels.find(l => l.id.toLowerCase() === id.toLowerCase()) || null;
+}
+function getLevelByKeyword(kw) {
+  return gexLevels.find(l => l.id.toLowerCase().includes(kw.toLowerCase())) || null;
+}
+
+function computeStructure() {
+  if (!spotES || gexLevels.length === 0) return null;
+
+  const callWall   = getLevelByKeyword("Call Wall");
+  const putWall    = getLevelByKeyword("Put Wall");
+  const zeroGamma  = getLevelByKeyword("Zero Gamma");
+  const volTrigger = getLevelByKeyword("Trigger");
+
+  // distances in ES points
+  const dist = (lvl) => lvl ? +(spotES - lvl.es).toFixed(2) : null;
+  const pct  = (lvl) => lvl ? +((spotES - lvl.es) / spotES * 100).toFixed(2) : null;
+
+  const dCW = dist(callWall);
+  const dPW = dist(putWall);
+  const dZG = dist(zeroGamma);
+  const dVT = dist(volTrigger);
+
+  // Régime: spot vs zero gamma
+  let regime = "inconnu";
+  let regimeFlip = null;
+  if (zeroGamma) {
+    regime = spotES > zeroGamma.es ? "pos" : "neg";
+    regimeFlip = Math.abs(dZG);
+  }
+
+  // Confidence score 0-10
+  let score = 0;
+  const factors = [];
+
+  // 1. Gamma regime matches HIRO
+  if (regime !== "inconnu") {
+    const hiroGamma = gammaState;
+    if ((regime === "pos" && hiroGamma === "pos") || (regime === "neg" && hiroGamma === "neg")) {
+      score += 2;
+      factors.push({label:"Gamma aligné", pts:"+2", cls:"pill-green"});
+    } else {
+      score -= 1;
+      factors.push({label:"Gamma désaccord", pts:"-1", cls:"pill-red"});
+    }
+  }
+
+  // 2. Distance to flip (further = more confident)
+  if (regimeFlip !== null) {
+    if (regimeFlip > 50) { score += 2; factors.push({label:"Loin du flip (+50pt)", pts:"+2", cls:"pill-green"}); }
+    else if (regimeFlip > 20) { score += 1; factors.push({label:"Distance flip modérée", pts:"+1", cls:"pill-yellow"}); }
+    else { score -= 1; factors.push({label:"Proche du flip (<20pt)", pts:"-1", cls:"pill-red"}); }
+  }
+
+  // 3. Room to Call Wall (bull direction)
+  if (callWall && dCW !== null) {
+    if (dCW < 0 && Math.abs(dCW) < 30) { score += 1; factors.push({label:"Espace vers CW (+30pt)", pts:"+1", cls:"pill-green"}); }
+    else if (dCW > 0) { factors.push({label:"Au-dessus du CW", pts:"0", cls:"pill-gray"}); }
+  }
+
+  // 4. Support Put Wall
+  if (putWall && dPW !== null) {
+    if (dPW > 0 && dPW < 50) { score += 1; factors.push({label:"Put Wall proche en support", pts:"+1", cls:"pill-green"}); }
+  }
+
+  // 5. Vol Trigger proximity
+  if (volTrigger && dVT !== null) {
+    if (Math.abs(dVT) < 15) { score -= 1; factors.push({label:"Proche Vol Trigger (<15pt)", pts:"-1", cls:"pill-red"}); }
+    else { score += 1; factors.push({label:"Au-dessus du Vol Trigger", pts:"+1", cls:"pill-green"}); }
+  }
+
+  // nearest magnet (closest level that is NOT just below spot for bear or above for bull)
+  const sorted = [...gexLevels]
+    .filter(l => l.id.includes("Gamma") || l.id.includes("Wall"))
+    .sort((a,b) => Math.abs(spotES - a.es) - Math.abs(spotES - b.es));
+  const nearestMagnet = sorted[0] || null;
+
+  // Sort all levels by ES price desc
+  const allSorted = [...gexLevels].sort((a,b) => b.es - a.es);
+
+  return {
+    regime, regimeFlip, callWall, putWall, zeroGamma, volTrigger,
+    dCW, dPW, dZG, dVT, pCW:pct(callWall), pPW:pct(putWall),
+    score: Math.max(0, Math.min(10, score + 5)),
+    factors, nearestMagnet, allSorted
+  };
+}
+
+/* ── RENDER STRUCTURE TAB ───────────────────────────── */
+function renderStructure() {
+  const s = computeStructure();
+
+  // Regime bar
+  const regimeEl = document.getElementById("regime-content");
+  if (!s) {
+    regimeEl.innerHTML = "<span style='color:var(--text3);font-family:var(--mono);font-size:11px'>Entrer le spot ES et les niveaux pour calculer le régime.</span>";
+    document.getElementById("key-levels-grid").style.display = "none";
+    document.getElementById("full-table-card").style.display = "none";
+    return;
+  }
+
+  const regimeTxt = s.regime === "pos"
+    ? "<span class='regime-pill pill-green'>GAMMA +</span><span class='regime-detail'> Spot au-dessus du Zero Gamma (" + (s.zeroGamma ? s.zeroGamma.es : "?") + "). Marché stabilisant.</span>"
+    : s.regime === "neg"
+    ? "<span class='regime-pill pill-red'>GAMMA −</span><span class='regime-detail'> Spot en-dessous du Zero Gamma (" + (s.zeroGamma ? s.zeroGamma.es : "?") + "). Marché volatile.</span>"
+    : "<span class='regime-pill pill-gray'>INCONNU</span><span class='regime-detail'> Zero Gamma non trouvé dans les niveaux.</span>";
+
+  const flipTxt = s.regimeFlip !== null
+    ? " &nbsp;<span class='regime-pill pill-yellow'>Flip à " + (s.zeroGamma ? s.zeroGamma.es : "?") + " (" + s.regimeFlip.toFixed(0) + "pt)</span>"
+    : "";
+
+  regimeEl.innerHTML = "<div class='regime-row'>" + regimeTxt + flipTxt + "</div>";
+
+  // Key levels
+  document.getElementById("key-levels-grid").style.display = "";
+  const keyList = document.getElementById("key-levels-list");
+  const keyLevs = [
+    {lvl: s.callWall,   d: s.dCW, p: s.pCW, label: "Call Wall"},
+    {lvl: s.putWall,    d: s.dPW, p: s.pPW, label: "Put Wall"},
+    {lvl: s.zeroGamma,  d: s.dZG, p: null,  label: "Zero Gamma"},
+    {lvl: s.volTrigger, d: s.dVT, p: null,  label: "Vol Trigger"},
+  ];
+  keyList.innerHTML = keyLevs.map(({lvl, d, p, label}) => {
+    if (!lvl) return '<div class="level-row"><span class="level-name" style="color:var(--text3)">' + label + '</span><span style="font-size:10px;color:var(--text3)">n/a</span></div>';
+    const col = levelColor(lvl.id);
+    const absDist = d !== null ? Math.abs(d) : null;
+    let distCls = "dist-na", distTxt = "—";
+    if (d !== null) {
+      distTxt = (d > 0 ? "+" : "") + d.toFixed(0) + "pt";
+      if (p !== null) distTxt += " (" + (p > 0 ? "+" : "") + p.toFixed(2) + "%)";
+      distCls = absDist < 20 ? "dist-near" : d > 0 ? "dist-above" : "dist-below";
+    }
+    return '<div class="level-row">'
+      + '<span class="level-name" style="color:' + col + '">' + label + '</span>'
+      + '<span class="level-price">' + lvl.es + '</span>'
+      + '<span class="level-dist ' + distCls + '">' + distTxt + '</span>'
+      + '</div>';
+  }).join("");
+
+  // Score block
+  const scoreEl = document.getElementById("score-block");
+  const scoreColor = s.score >= 7 ? "var(--green)" : s.score >= 5 ? "var(--yellow)" : "var(--red)";
+  scoreEl.innerHTML = '<div class="score-badge">'
+    + '<span class="score-num" style="color:' + scoreColor + '">' + s.score + '/10</span>'
+    + '<div class="score-label">Conviction<br>structurelle</div>'
+    + '</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">'
+    + s.factors.map(f => '<span class="regime-pill ' + f.cls + '" style="font-size:10px">' + f.label + ' <strong>' + f.pts + '</strong></span>').join("")
+    + '</div>';
+
+  // Full table
+  document.getElementById("full-table-card").style.display = "";
+  const tbody = document.getElementById("levels-tbody");
+  tbody.innerHTML = s.allSorted.map(l => {
+    const d = +(spotES - l.es).toFixed(0);
+    const p = +((spotES - l.es) / spotES * 100).toFixed(2);
+    const absDist = Math.abs(d);
+    const distCls = absDist < 20 ? "dist-near" : d > 0 ? "dist-above" : "dist-below";
+    const distTxt = (d > 0 ? "+" : "") + d + "pt";
+    const pTxt = (p > 0 ? "+" : "") + p + "%";
+    const isNear = absDist < 20;
+    const col = levelColor(l.id);
+    return '<tr' + (isNear ? ' class="highlight-row"' : '') + '>'
+      + '<td style="font-weight:700;color:' + col + ';font-family:var(--mono);font-size:11px">' + l.id + '</td>'
+      + '<td style="font-family:var(--mono);font-size:11px;color:var(--text)">' + l.spx + '</td>'
+      + '<td style="font-family:var(--mono);font-size:11px;color:var(--text)">' + l.es + '</td>'
+      + '<td><span class="level-dist ' + distCls + '">' + distTxt + '</span></td>'
+      + '<td style="font-size:11px;color:var(--text3)">' + pTxt + '</td>'
+      + '</tr>';
+  }).join("");
+}
+
+/* ── STRUCT SUMMARY IN ANALYSE PANEL ────────────────── */
+function buildStructSummary() {
+  const s = computeStructure();
+  if (!s || !spotES) return "";
+  const pills = [];
+  if (s.callWall && s.dCW !== null)
+    pills.push('<span class="struct-pill ' + (s.dCW < 0 ? "pill-up" : "pill-dn") + '">CW ' + s.callWall.es + ' (' + (s.dCW > 0 ? "+" : "") + s.dCW.toFixed(0) + 'pt)</span>');
+  if (s.putWall && s.dPW !== null)
+    pills.push('<span class="struct-pill ' + (s.dPW > 0 ? "pill-up" : "pill-dn") + '">PW ' + s.putWall.es + ' (' + (s.dPW > 0 ? "+" : "") + s.dPW.toFixed(0) + 'pt)</span>');
+  if (s.zeroGamma && s.dZG !== null)
+    pills.push('<span class="struct-pill ' + (Math.abs(s.dZG) < 20 ? "pill-warn" : s.dZG < 0 ? "pill-dn" : "pill-up") + '">ZG ' + s.zeroGamma.es + ' (' + (s.dZG > 0 ? "+" : "") + s.dZG.toFixed(0) + 'pt)</span>');
+  if (s.volTrigger && s.dVT !== null)
+    pills.push('<span class="struct-pill ' + (Math.abs(s.dVT) < 15 ? "pill-warn" : "pill-up") + '">VT ' + s.volTrigger.es + ' (' + (s.dVT > 0 ? "+" : "") + s.dVT.toFixed(0) + 'pt)</span>');
+  if (s.nearestMagnet)
+    pills.push('<span class="struct-pill">Aimant: ' + s.nearestMagnet.id + ' ' + s.nearestMagnet.es + '</span>');
+  pills.push('<span class="struct-pill ' + (s.score >= 7 ? "pill-up" : s.score >= 5 ? "pill-warn" : "pill-dn") + '">Score ' + s.score + '/10</span>');
+  if (pills.length === 0) return "";
+  return '<div class="analyse-tag tag-sortie" style="margin-top:2px;flex-shrink:0">STRUCT</div>'
+    + '<div style="flex:1"><div class="struct-summary">' + pills.join("") + '</div></div>';
+}
+
+function toggleFullTable() {
+  const body = document.getElementById('full-table-body');
+  const chev = document.getElementById('full-table-chevron');
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? '' : 'none';
+  chev.style.transform = hidden ? 'rotate(90deg)' : '';
+}
+
+function toggleSecondary(header) {
+  const sec = header.nextElementSibling;
+  const chev = header.querySelector('.analyse-chevron');
+  const isHidden = sec.classList.contains('hidden');
+  sec.classList.toggle('hidden', !isHidden);
+  chev.classList.toggle('open', isHidden);
 }
 
 window.addEventListener('resize',()=>{if(animCurrent)drawBoth(animCurrent);});
