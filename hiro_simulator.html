@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIRO Simulator — GEX Flow Reader</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root[data-theme="dark"] {
+  --bg:#0b0e11;--bg2:#111519;--bg3:#181d22;--bg4:#1e252c;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --text:#e8eaed;--text2:#8b9099;--text3:#555d66;
+  --flat-border:rgba(255,255,255,0.6);--flat-bg:rgba(255,255,255,0.08);--flat-text:#ffffff;
+  --chart-grid:rgba(255,255,255,0.06);--chart-zero:rgba(255,255,255,0.35);
+  --scrollbar:#1e252c;
+  --slider-track:#1e252c;--slider-track-fill:#ffd32a;
+}
+:root[data-theme="light"] {
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#f7f8fa;--bg4:#ebedf0;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);
+  --text:#111519;--text2:#4a5260;--text3:#9aa0ad;
+  --flat-border:rgba(0,0,0,0.5);--flat-bg:rgba(0,0,0,0.07);--flat-text:#111111;
+  --chart-grid:rgba(0,0,0,0.06);--chart-zero:rgba(0,0,0,0.35);
+  --scrollbar:#dde0e5;
+  --slider-track:#dde0e5;--slider-track-fill:#e6a800;
+}
+:root {
+  --green:#00d084;--green-dim:rgba(0,208,132,0.12);--green-mid:rgba(0,208,132,0.25);
+  --red:#ff4757;--red-dim:rgba(255,71,87,0.12);--red-mid:rgba(255,71,87,0.25);
+  --yellow:#ffd32a;--yellow-dim:rgba(255,211,42,0.10);--yellow-mid:rgba(255,211,42,0.22);
+  --blue:#1e90ff;--blue-dim:rgba(30,144,255,0.10);
+  --gray-dim:rgba(128,128,128,0.08);--gray-mid:rgba(128,128,128,0.14);
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+  --radius:8px;--radius-lg:12px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;line-height:1.5;transition:background .2s,color .2s}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--bg2);gap:12px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.logo-text{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:0.1em;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:0.05em}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-tag{font-family:var(--mono);font-size:10px;color:var(--text3);border:1px solid var(--border2);padding:3px 10px;border-radius:20px;letter-spacing:0.08em}
+.theme-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:4px 10px;transition:all .15s}
+.theme-toggle:hover{border-color:var(--green)}
+.theme-toggle span{font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;user-select:none}
+
+/* TABS */
+.tabs{display:flex;padding:0 24px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.tab{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:0.06em;color:var(--text3);padding:12px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-left:none;border-right:none;border-top:none;text-transform:uppercase}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+
+/* LAYOUT */
+.main{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 90px)}
+.sidebar{border-right:1px solid var(--border);padding:16px;background:var(--bg2);display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.content{padding:20px 24px;overflow-y:auto}
+
+/* CTRL BUTTONS */
+.ctrl-group{display:flex;flex-direction:column;gap:5px}
+.ctrl-group-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px}
+.ctrl-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.ctrl-row-2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.ctrl-btn{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 4px;text-align:center;cursor:pointer;transition:all .12s}
+.ctrl-btn:hover{border-color:var(--border2);background:var(--bg4)}
+.ctrl-btn.active-bull{border-color:var(--green);background:var(--green-dim)}
+.ctrl-btn.active-bear{border-color:var(--red);background:var(--red-dim)}
+.ctrl-btn.active-warn{border-color:var(--yellow);background:var(--yellow-dim)}
+.ctrl-btn.active-white{border-color:var(--flat-border);background:var(--flat-bg)}
+.ctrl-btn-label{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:3px}
+.ctrl-btn-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text2)}
+.ctrl-btn.active-bull .ctrl-btn-val{color:var(--green)}
+.ctrl-btn.active-bear .ctrl-btn-val{color:var(--red)}
+.ctrl-btn.active-warn .ctrl-btn-val{color:var(--yellow)}
+.ctrl-btn.active-white .ctrl-btn-val{color:var(--flat-text)}
+.ctrl-btn.active-white .ctrl-btn-label{color:var(--flat-text);opacity:.6}
+.ctrl-btn.active-white .ctrl-btn-sub{color:var(--flat-text);opacity:.45}
+.ctrl-btn-sub{font-family:var(--mono);font-size:8px;color:var(--text3);margin-top:2px}
+.ctrl-btn.active-bull .ctrl-btn-sub{color:rgba(0,208,132,0.7)}
+.ctrl-btn.active-bear .ctrl-btn-sub{color:rgba(255,71,87,0.7)}
+.ctrl-btn.active-warn .ctrl-btn-sub{color:rgba(255,211,42,0.7)}
+
+.divider{height:1px;background:var(--border)}
+
+/* SIGNAL BARS */
+.signal-bars{display:flex;align-items:flex-end;gap:3px;height:28px}
+.signal-bar{width:5px;border-radius:2px;background:var(--border2);transition:height .3s,background .3s}
+
+/* ── NOTIONAL SLIDER ─────────────────────────────── */
+.slider-block{display:flex;flex-direction:column;gap:7px}
+.slider-row{display:flex;align-items:center;gap:8px}
+.slider-val{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--yellow);min-width:52px;text-align:right}
+.slider-zone-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;min-width:52px;text-align:center}
+.slider-zone-label.zone-neut{background:var(--gray-mid);color:var(--text3)}
+.slider-zone-label.zone-mod{background:var(--yellow-dim);color:var(--yellow)}
+.slider-zone-label.zone-str{background:var(--red-dim);color:var(--red)}
+/* custom range */
+input[type=range].notional-slider{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:5px;border-radius:3px;
+  background:var(--slider-track);outline:none;cursor:pointer;
+}
+input[type=range].notional-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--yellow);border:2px solid var(--bg2);
+  box-shadow:0 0 6px rgba(255,211,42,0.5);
+  cursor:pointer;transition:transform .1s;
+}
+input[type=range].notional-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range].notional-slider::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;
+  background:var(--yellow);border:2px solid var(--bg2);cursor:pointer;
+}
+.slider-ticks{display:flex;justify-content:space-between;padding:0 1px}
+.slider-tick{font-family:var(--mono);font-size:8px;color:var(--text3)}
+/* highlight active tick */
+.slider-tick.active{color:var(--yellow);font-weight:700}
+
+/* RESULT PANEL */
+.result-panel{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.result-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+.result-badge{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 16px;border-radius:20px}
+.badge-bull{background:var(--green-mid);color:var(--green)}
+.badge-bear{background:var(--red-mid);color:var(--red)}
+.badge-neut{background:var(--gray-mid);color:var(--text3)}
+.badge-warn{background:var(--yellow-mid);color:var(--yellow)}
+.result-title{font-size:20px;font-weight:600;color:var(--text)}
+.result-body{padding:18px 22px;display:flex;flex-direction:column;gap:12px}
+.result-row{display:flex;gap:12px;align-items:flex-start}
+.result-icon{font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 8px;border-radius:4px;white-space:nowrap;margin-top:2px;flex-shrink:0}
+.icon-flow{background:var(--blue-dim);color:var(--blue)}
+.icon-gamma{background:var(--gray-mid);color:var(--text2)}
+.icon-notional{background:var(--yellow-dim);color:var(--yellow)}
+.icon-bias{background:var(--gray-dim);color:var(--text2)}
+.icon-action{background:var(--green-dim);color:var(--green)}
+.icon-action-bear{background:var(--red-dim);color:var(--red)}
+.icon-action-warn{background:var(--yellow-dim);color:var(--yellow)}
+.icon-action-neut{background:var(--gray-mid);color:var(--text3)}
+.result-text{font-size:13px;color:var(--text2);line-height:1.65}
+.result-text strong{color:var(--text);font-weight:500}
+
+/* CHARTS */
+.charts-section{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.chart-card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
+.chart-card-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)}
+.chart-legend{display:flex;gap:10px}
+.legend-item{display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;color:var(--text3)}
+.legend-dot{width:6px;height:6px;border-radius:50%}
+.chart-wrap{padding:10px 14px 12px;position:relative}
+canvas.mini-chart{width:100%;display:block}
+
+/* RESULT REPEAT BELOW CHARTS */
+.result-summary{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.summary-action{font-size:15px;font-weight:600;color:var(--text)}
+.summary-badge{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:6px 18px;border-radius:20px}
+
+/* STATIC PAGES */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+.info-card-title{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.info-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+.info-arrow{font-family:var(--mono);font-size:12px;font-weight:700;width:18px;flex-shrink:0;margin-top:1px}
+.info-text{font-size:12px;color:var(--text2);line-height:1.5}
+.info-text strong{color:var(--text);font-weight:500}
+.ntable{width:100%;border-collapse:collapse}
+.ntable th{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.ntable td{font-size:11px;color:var(--text2);padding:9px 10px;border-bottom:1px solid var(--border);line-height:1.4}
+.ntable tr:last-child td{border-bottom:none}
+.zone-label{font-family:var(--mono);font-size:10px;font-weight:700}
+.zone-n{color:var(--text3)}.zone-m{color:var(--yellow)}.zone-s{color:var(--red)}
+.ntable td strong{color:var(--text);font-weight:500}
+.analogy{background:var(--bg4);border-left:2px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0;padding:11px 14px;font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:12px}
+.analogy strong{color:var(--text);font-weight:500}
+.page{display:none}.page.active{display:block}
+.page-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+.section-block{margin-bottom:20px}
+.section-block-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px}
+.gamma-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.gamma-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+.gamma-card.pos-card{border-top:2px solid var(--green)}
+.gamma-card.neg-card{border-top:2px solid var(--red)}
+.gamma-card-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.08em;margin-bottom:8px}
+.gamma-card.pos-card .gamma-card-title{color:var(--green)}
+.gamma-card.neg-card .gamma-card-title{color:var(--red)}
+.gamma-card-body{font-size:12px;color:var(--text2);line-height:1.6}
+.gamma-sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.gamma-sub{border-radius:var(--radius);padding:7px 9px;font-size:11px;line-height:1.4}
+.sub-bull{background:var(--green-dim);color:var(--green)}
+.sub-bear{background:var(--red-dim);color:var(--red)}
+.sub-bull strong,.sub-bear strong{font-weight:600;display:block;margin-bottom:2px}
+.nbias-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.nbias-card{border-radius:var(--radius);padding:10px 12px}
+.nbias-card.above-up{background:rgba(0,208,132,0.08);border:1px solid rgba(0,208,132,0.22)}
+.nbias-card.above-dn{background:rgba(255,211,42,0.06);border:1px solid rgba(255,211,42,0.18)}
+.nbias-card.below-dn{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.22)}
+.nbias-card.below-up{background:rgba(255,211,42,0.06);border:1px solid rgba(255,211,42,0.18)}
+.nbias-title{font-family:var(--mono);font-size:10px;font-weight:700;margin-bottom:4px}
+.nbias-body{font-size:11px;line-height:1.5;color:var(--text2)}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <div>
+      <div class="logo-text">HIRO SIMULATOR</div>
+      <div class="logo-sub">Options Flow Reader — SPX / ES / NQ</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span id="theme-icon">🌙</span>
+      <span id="theme-label">DARK</span>
+    </div>
+    <div class="header-tag">GAMMA · FLOW · NOTIONAL</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('sim')">Simulateur</button>
+  <button class="tab" onclick="showTab('level')">Niveau vs direction</button>
+  <button class="tab" onclick="showTab('gamma')">Gamma + vs −</button>
+  <button class="tab" onclick="showTab('notional')">Notional 1H</button>
+</div>
+
+<div class="main">
+<div class="sidebar">
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-label">Ligne calls (verte)</div>
+    <div class="ctrl-row">
+      <div class="ctrl-btn active-bull" id="c-up" onclick="pick('call','up')">
+        <div class="ctrl-btn-label">monte</div><div class="ctrl-btn-val">↑</div>
+      </div>
+      <div class="ctrl-btn" id="c-flat" onclick="pick('call','flat')">
+        <div class="ctrl-btn-label">flat</div><div class="ctrl-btn-val">—</div>
+      </div>
+      <div class="ctrl-btn" id="c-dn" onclick="pick('call','dn')">
+        <div class="ctrl-btn-label">descend</div><div class="ctrl-btn-val">↓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-label">Ligne puts (bleue)</div>
+    <div class="ctrl-row">
+      <div class="ctrl-btn" id="p-up" onclick="pick('put','up')">
+        <div class="ctrl-btn-label">monte</div><div class="ctrl-btn-val">↑</div>
+      </div>
+      <div class="ctrl-btn active-white" id="p-flat" onclick="pick('put','flat')">
+        <div class="ctrl-btn-label">flat</div><div class="ctrl-btn-val">—</div>
+      </div>
+      <div class="ctrl-btn" id="p-dn" onclick="pick('put','dn')">
+        <div class="ctrl-btn-label">descend</div><div class="ctrl-btn-val">↓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- NOTIONAL SLIDER -->
+  <div class="ctrl-group">
+    <div class="ctrl-group-label">Notional 1H — intensité</div>
+    <div class="slider-block">
+      <div class="slider-row">
+        <input type="range" class="notional-slider" id="notional-slider"
+          min="0" max="1000" step="10" value="350"
+          oninput="onSliderChange(this.value)">
+      </div>
+      <div class="slider-row" style="justify-content:space-between">
+        <div class="slider-tick active" id="tick-neut">BRUIT<br><span style="font-size:7px">0–250M</span></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span id="slider-val-display" class="slider-val">350M</span>
+          <span id="slider-zone-badge" class="slider-zone-label zone-mod">SIGNAL</span>
+        </div>
+        <div class="slider-tick" id="tick-mod">SIGNAL<br><span style="font-size:7px">250–500M</span></div>
+        <div class="slider-tick" id="tick-str">VIOLENT<br><span style="font-size:7px">>500M</span></div>
+      </div>
+    </div>
+
+    <!-- 3 boutons restants (mis à jour par le slider) -->
+    <div class="ctrl-row" style="margin-top:4px">
+      <div class="ctrl-btn" id="n-neut" onclick="setNotionalFromBtn('neut')">
+        <div class="ctrl-btn-label">sans effet</div>
+        <div class="ctrl-btn-val" style="font-size:10px">0–250M</div>
+        <div class="ctrl-btn-sub">bruit</div>
+      </div>
+      <div class="ctrl-btn active-warn" id="n-mod" onclick="setNotionalFromBtn('mod')">
+        <div class="ctrl-btn-label">avec effet</div>
+        <div class="ctrl-btn-val" style="font-size:10px">250–500M</div>
+        <div class="ctrl-btn-sub">signal</div>
+      </div>
+      <div class="ctrl-btn" id="n-str" onclick="setNotionalFromBtn('str')">
+        <div class="ctrl-btn-label">fort effet</div>
+        <div class="ctrl-btn-val" style="font-size:10px">>500M</div>
+        <div class="ctrl-btn-sub">violent</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-label">Notional 1H — position vs 0</div>
+    <div class="ctrl-row-2">
+      <div class="ctrl-btn active-bull" id="nb-above" onclick="pickBias('above')">
+        <div class="ctrl-btn-label">au-dessus de 0</div>
+        <div class="ctrl-btn-val" style="font-size:11px">+ biais</div>
+        <div class="ctrl-btn-sub">MMs acheteurs nets</div>
+      </div>
+      <div class="ctrl-btn" id="nb-below" onclick="pickBias('below')">
+        <div class="ctrl-btn-label">en-dessous de 0</div>
+        <div class="ctrl-btn-val" style="font-size:11px">− biais</div>
+        <div class="ctrl-btn-sub">MMs vendeurs nets</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-label">Notional 1H — direction</div>
+    <div class="ctrl-row">
+      <div class="ctrl-btn active-bull" id="nd-up" onclick="pickDir('up')">
+        <div class="ctrl-btn-label">monte</div><div class="ctrl-btn-val">↑</div>
+      </div>
+      <div class="ctrl-btn" id="nd-flat" onclick="pickDir('flat')">
+        <div class="ctrl-btn-label">flat</div><div class="ctrl-btn-val">—</div>
+      </div>
+      <div class="ctrl-btn" id="nd-dn" onclick="pickDir('dn')">
+        <div class="ctrl-btn-label">descend</div><div class="ctrl-btn-val">↓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="ctrl-group">
+    <div class="ctrl-group-label">Régime gamma</div>
+    <div class="ctrl-row-2">
+      <div class="ctrl-btn active-bear" id="g-neg" onclick="pickGamma('neg')">
+        <div class="ctrl-btn-label">gamma −</div>
+        <div class="ctrl-btn-val" style="font-size:11px">volatile</div>
+      </div>
+      <div class="ctrl-btn" id="g-pos" onclick="pickGamma('pos')">
+        <div class="ctrl-btn-label">gamma +</div>
+        <div class="ctrl-btn-val" style="font-size:11px">stabilisant</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div>
+    <div class="ctrl-group-label" style="margin-bottom:6px">Force du signal</div>
+    <div class="signal-bars" id="signal-bars"></div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div class="content">
+
+  <!-- SIM TAB -->
+  <div class="page active" id="tab-sim">
+    <div class="page-title">Lecture en temps réel</div>
+    <div id="result-box"></div>
+
+    <div class="charts-section">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div class="chart-card-title">Calls / Puts flow</div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Calls</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Puts</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-cp" class="mini-chart" height="110"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div class="chart-card-title">Notional 1H total</div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Notional</div>
+            <div class="legend-item" style="gap:3px">
+              <div style="width:14px;height:1px;background:var(--chart-zero);border-top:1px dashed var(--chart-zero)"></div>
+              <span>Zéro</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-not" class="mini-chart" height="110"></canvas></div>
+      </div>
+    </div>
+
+    <!-- RÉSUMÉ RÉPÉTÉ SOUS LES CHARTS -->
+    <div id="result-summary-box"></div>
+  </div>
+
+  <!-- LEVEL TAB -->
+  <div class="page" id="tab-level">
+    <div class="page-title">Niveau vs direction</div>
+    <div class="section-block">
+      <div class="section-block-title">Calls / Puts — le niveau ne compte pas</div>
+      <div class="analogy">
+        Ton compte bancaire est à <strong>−300€</strong>. Tu reçois +200€. Il monte à −100€.<br>
+        Tu es encore dans le rouge mais tu <strong>reçois de l'argent</strong>. C'est pareil pour les lignes calls/puts.<br><br>
+        Ligne calls à −200M qui <strong>monte</strong> vers −100M = MMs achètent spot. Peu importe le niveau.<br>
+        Ligne calls à +200M qui <strong>descend</strong> vers +100M = MMs vendent spot. Peu importe le niveau.
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-title" style="color:var(--green)">Ligne monte ↑</div>
+          <div class="info-row"><div class="info-arrow" style="color:var(--green)">→</div><div class="info-text">MMs accumulent delta <strong>positif</strong> → achètent spot</div></div>
+          <div class="info-row"><div class="info-arrow" style="color:var(--green)">→</div><div class="info-text">Valable que ce soit à −300M ou +100M</div></div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title" style="color:var(--red)">Ligne descend ↓</div>
+          <div class="info-row"><div class="info-arrow" style="color:var(--red)">→</div><div class="info-text">MMs accumulent delta <strong>négatif</strong> → vendent spot</div></div>
+          <div class="info-row"><div class="info-arrow" style="color:var(--red)">→</div><div class="info-text">Valable que ce soit à +300M ou −100M</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="section-block">
+      <div class="section-block-title">Notional 1H total — le niveau ET la direction comptent</div>
+      <div class="analogy">
+        <strong>Le niveau</strong> = biais accumulé depuis le début de la session<br>
+        <strong>La direction</strong> = ce qui se passe maintenant
+      </div>
+      <div class="nbias-grid">
+        <div class="nbias-card above-up"><div class="nbias-title" style="color:var(--green)">Au-dessus de 0 + monte ↑</div><div class="nbias-body">Biais haussier qui s'amplifie.</div></div>
+        <div class="nbias-card above-dn"><div class="nbias-title" style="color:var(--yellow)">Au-dessus de 0 + descend ↓</div><div class="nbias-body">Biais haussier qui s'érode.</div></div>
+        <div class="nbias-card below-dn"><div class="nbias-title" style="color:var(--red)">En-dessous de 0 + descend ↓</div><div class="nbias-body">Biais baissier qui s'amplifie.</div></div>
+        <div class="nbias-card below-up"><div class="nbias-title" style="color:var(--yellow)">En-dessous de 0 + monte ↑</div><div class="nbias-body">Biais baissier qui s'allège.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAMMA TAB -->
+  <div class="page" id="tab-gamma">
+    <div class="page-title">Régime gamma</div>
+    <div class="gamma-grid">
+      <div class="gamma-card pos-card">
+        <div class="gamma-card-title">GAMMA + — amortisseur</div>
+        <div class="gamma-card-body">MMs font <strong>l'inverse du marché</strong>. Moves étouffés.</div>
+        <div class="gamma-sub-grid">
+          <div class="gamma-sub sub-bull"><strong>HIRO haussier</strong>Hausse limitée, fade possible</div>
+          <div class="gamma-sub sub-bear"><strong>HIRO baissier</strong>Baisse amortie, rebond probable</div>
+        </div>
+      </div>
+      <div class="gamma-card neg-card">
+        <div class="gamma-card-title">GAMMA − — accélérateur</div>
+        <div class="gamma-card-body">MMs font <strong>la même chose que le marché</strong>. Moves amplifiés.</div>
+        <div class="gamma-sub-grid">
+          <div class="gamma-sub sub-bull"><strong>HIRO haussier</strong>Rally amplifié, laisser courir</div>
+          <div class="gamma-sub sub-bear"><strong>HIRO baissier</strong>Sell-off qui s'emballe</div>
+        </div>
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">Zero Gamma Level</div>
+      <div class="info-row"><div class="info-arrow" style="color:var(--green)">↑</div><div class="info-text">Prix <strong>au-dessus</strong> → gamma + → stabilisé</div></div>
+      <div class="info-row"><div class="info-arrow" style="color:var(--red)">↓</div><div class="info-text">Prix <strong>en-dessous</strong> → gamma − → volatile</div></div>
+      <div class="info-row"><div class="info-arrow" style="color:var(--yellow)">↔</div><div class="info-text">Prix <strong>traverse</strong> → changement de régime</div></div>
+    </div>
+  </div>
+
+  <!-- NOTIONAL TAB -->
+  <div class="page" id="tab-notional">
+    <div class="page-title">Notional 1H — les 3 dimensions</div>
+    <div class="analogy" style="margin-bottom:14px">
+      1. <strong>L'intensité</strong> — bruit ou vrai flux ?<br>
+      2. <strong>Le niveau</strong> — quel biais accumulé ?<br>
+      3. <strong>La direction</strong> — le biais s'amplifie ou s'efface ?
+    </div>
+    <div class="info-card" style="margin-bottom:12px">
+      <table class="ntable">
+        <thead><tr><th>Intensité</th><th>Valeur</th><th>Ce que ça veut dire</th><th>Gamma +</th><th>Gamma −</th></tr></thead>
+        <tbody>
+          <tr><td><span class="zone-label zone-n">BRUIT</span></td><td style="font-family:var(--mono);font-size:10px;color:var(--text3)">0–250M</td><td>Rééquilibrage normal.</td><td style="font-size:11px;color:var(--text3)">Attendre</td><td style="font-size:11px;color:var(--text3)">Attendre</td></tr>
+          <tr><td><span class="zone-label zone-m">SIGNAL</span></td><td style="font-family:var(--mono);font-size:10px;color:var(--yellow)">250–500M</td><td>Flux institutionnel réel.</td><td style="font-size:11px;color:var(--text2)">Move modéré</td><td style="font-size:11px;color:var(--yellow)">Move amplifié</td></tr>
+          <tr><td><span class="zone-label zone-s">VIOLENT</span></td><td style="font-family:var(--mono);font-size:10px;color:var(--red)">>500M</td><td>Flux majeur.</td><td style="font-size:11px;color:var(--text2)">Fort mais amorti</td><td style="font-size:11px;color:var(--red)">Crash / squeeze</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let callState='up', putState='flat', gammaState='neg',
+    notionalState='mod', biasState='above', dirState='up';
+let notionalValue = 350; // slider value in M
+let isDark = true;
+
+/* ═══════════════════════════════
+   SCENARIOS / COPY
+═══════════════════════════════ */
+const scenarios={
+  'up_up':    {cls:'bull',titre:'Double pression haussière',flow:'Les deux montent → MMs achètent spot des deux côtés.',action:'Setup long fort. Double flux entrant.'},
+  'up_flat':  {cls:'bull',titre:'Haussier propre',flow:'Calls montent, puts neutres → MMs achètent spot pour hedger les calls.',action:'Entrée long valide. Signal clair.'},
+  'up_dn':    {cls:'warn',titre:'Piège — explosion de vol',flow:'Calls montent ET puts descendent = achat des deux côtés.',action:'Direction incertaine. Ne pas trader. Vol imminente.'},
+  'flat_up':  {cls:'bull',titre:'Dénouement de puts',flow:'Puts montent = MMs rachètent leur hedge short → pression haussière.',action:'Rebond possible. Attendre confirmation calls.'},
+  'flat_flat':{cls:'neut',titre:'Neutre — aucun signal',flow:'Aucune pression directionnelle. MMs ne hedgent rien.',action:'Ne pas trader. Attendre un catalyseur.'},
+  'flat_dn':  {cls:'bear',titre:'Baissier propre',flow:'Puts descendent = achat massif de puts → MMs vendent spot.',action:'Entrée short valide. Signal clair.'},
+  'dn_up':    {cls:'bull',titre:'Rebond / dénouement',flow:'Puts montent (dénouement) + calls lâchent → MMs rachètent.',action:'Rebond en cours. Sortir les shorts.'},
+  'dn_flat':  {cls:'bear',titre:'Baissier léger',flow:'Dénouement de calls → MMs vendent le delta long accumulé.',action:'Short possible, faible conviction. Petite taille.'},
+  'dn_dn':    {cls:'bear',titre:'Distribution / capitulation',flow:'Les deux descendent → vente de calls + achat de puts.',action:'Signal baissier majeur. Tout le monde sort.'},
+};
+const gammaMsg={
+  neg:{bull:'Gamma − : rally amplifié. Laisser courir.',bear:'Gamma − : sell-off auto-alimenté. Stops larges.',neut:'Gamma − : quand le move part, il sera violent.',warn:'Gamma − : vol amplifiée. Danger des deux côtés.'},
+  pos:{bull:'Gamma + : hausse amortie. Target proche.',bear:'Gamma + : baisse amortie. Rebond probable.',neut:'Gamma + : range comprimé. Attendre breakout.',warn:'Gamma + : vol contenue. Moves limités.'},
+};
+const notionalMsg={
+  neut:{bull:'Intensité faible (bruit) — attendre flux >250M.',bear:'Intensité faible (bruit) — signal insuffisant.',neut:'Aucun edge directionnel.',warn:'Vol attendue, pas encore amorcée.'},
+  mod: {bull:'Flux réel (250–500M) — entrée long valide.',bear:'Flux réel (250–500M) — entrée short valide.',neut:'Flux modéré, direction floue. Observer.',warn:'Move imminent. Attendre direction.'},
+  str: {bull:'Flux majeur (>500M) — rally violent. Laisser courir.',bear:'Flux majeur (>500M) — sell-off violent. Ne pas contrer.',neut:'Flux >500M sans direction = explosion de vol.',warn:'Flux >500M : aucune position sans confirmation.'},
+};
+const biasMsg={
+  'above_up':  {bull:'Notional au-dessus de 0 et monte → biais haussier qui s\'amplifie.',bear:'Notional au-dessus de 0 et monte → biais contre le short.',neut:'Biais haussier dominant.',warn:'Biais haussier, vol des deux côtés.'},
+  'above_flat':{bull:'Au-dessus de 0 et flat → biais haussier stable.',bear:'Au-dessus de 0 flat → biais contre le short.',neut:'Biais haussier de fond.',warn:'Biais haussier, direction incertaine.'},
+  'above_dn':  {bull:'Au-dessus de 0 mais descend → biais s\'érode. Réduire les longs.',bear:'Descend vers 0 → biais se neutralise. Signal short.',neut:'Transition en cours.',warn:'Changement de régime possible.'},
+  'below_dn':  {bull:'En-dessous de 0 et descend → biais contre le long.',bear:'En-dessous de 0 et descend → biais baissier qui s\'amplifie.',neut:'Biais baissier dominant.',warn:'Biais baissier fort, vol des deux côtés.'},
+  'below_flat':{bull:'En-dessous de 0 flat → conviction long réduite.',bear:'En-dessous de 0 flat → signal short modéré.',neut:'Biais baissier, attendre confirmation.',warn:'Biais baissier, direction incertaine.'},
+  'below_up':  {bull:'En-dessous de 0 mais remonte → MMs rachètent. Confirme le long.',bear:'En-dessous de 0 mais remonte → couvrir les shorts.',neut:'Dénouement en cours.',warn:'Possible retournement haussier.'},
+};
+
+/* ═══════════════════════════════
+   SLIDER LOGIC
+═══════════════════════════════ */
+function sliderToZone(v) {
+  if (v < 250) return 'neut';
+  if (v < 500) return 'mod';
+  return 'str';
+}
+
+function updateSliderUI(v) {
+  notionalValue = parseInt(v);
+  notionalState = sliderToZone(v);
+
+  // display
+  document.getElementById('slider-val-display').textContent = v + 'M';
+
+  // zone badge
+  const badge = document.getElementById('slider-zone-badge');
+  const zoneMap = {neut:['zone-neut','BRUIT'], mod:['zone-mod','SIGNAL'], str:['zone-str','VIOLENT']};
+  badge.className = 'slider-zone-label ' + zoneMap[notionalState][0];
+  badge.textContent = zoneMap[notionalState][1];
+
+  // ticks highlight
+  ['neut','mod','str'].forEach(z => {
+    document.getElementById('tick-'+z).classList.toggle('active', z===notionalState);
+  });
+
+  // buttons highlight
+  const btnStyleMap = {neut:'',mod:'active-warn',str:'active-bear'};
+  ['neut','mod','str'].forEach(z => {
+    const cls = z===notionalState && btnStyleMap[z] ? ' '+btnStyleMap[z] : '';
+    document.getElementById('n-'+z).className = 'ctrl-btn'+cls;
+  });
+
+  // slider gradient fill
+  const pct = (notionalValue / 1000) * 100;
+  const slider = document.getElementById('notional-slider');
+  const fillColor = notionalState==='str' ? '#ff4757' : notionalState==='mod' ? '#ffd32a' : '#555d66';
+  slider.style.background = `linear-gradient(to right, ${fillColor} 0%, ${fillColor} ${pct}%, var(--slider-track) ${pct}%, var(--slider-track) 100%)`;
+}
+
+function onSliderChange(v) {
+  updateSliderUI(v);
+  render();
+}
+
+function setNotionalFromBtn(zone) {
+  const valMap = {neut:100, mod:350, str:700};
+  document.getElementById('notional-slider').value = valMap[zone];
+  updateSliderUI(valMap[zone]);
+  render();
+}
+
+/* ═══════════════════════════════
+   CHART DATA
+═══════════════════════════════ */
+function generateLine(direction, baseVal, amplitude, pts) {
+  const arr=[], noise=amplitude*0.18;
+  const trend = direction==='up' ? amplitude/pts : direction==='dn' ? -amplitude/pts : 0;
+  let v = baseVal;
+  for (let i=0;i<pts;i++) { v += trend + (Math.random()-.5)*noise; arr.push(v); }
+  return arr;
+}
+
+function getChartData() {
+  const PTS=40;
+  const callBase = callState==='up'?-100:callState==='dn'?80:20;
+  const putBase  = putState==='up'?-80:putState==='dn'?60:-30;
+  const callLine = generateLine(callState, callBase, 80, PTS);
+  const putLine  = generateLine(putState,  putBase,  80, PTS);
+
+  // Notional amplitude driven by slider value
+  const amp = Math.max(60, notionalValue * 0.35);
+  const notBase = biasState==='above' ? notionalValue*0.9 : -notionalValue*0.9;
+  const notLine = generateLine(dirState, notBase, amp, PTS);
+
+  return { callLine, putLine, notLine };
+}
+
+/* ═══════════════════════════════
+   CANVAS RENDERER
+═══════════════════════════════ */
+let animCurrent=null, animFrame=null, animProgress=0;
+const ANIM_STEPS=30;
+function lerp(a,b,t){return a+(b-a)*t}
+function lerpArr(a,b,t){return a.map((v,i)=>lerp(v,b[i],t))}
+
+function drawChart(canvasId, lines, opts) {
+  const canvas=document.getElementById(canvasId); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  const W=rect.width, H=rect.height;
+  const PAD={t:8,b:8,l:10,r:10};
+  const iW=W-PAD.l-PAD.r, iH=H-PAD.t-PAD.b;
+  ctx.clearRect(0,0,W,H);
+
+  const allVals=lines.flatMap(l=>l.data);
+  let minV=Math.min(...allVals), maxV=Math.max(...allVals);
+  const pad=(maxV-minV)*0.15||30; minV-=pad; maxV+=pad;
+  const range=maxV-minV||1;
+  const toX=i=>PAD.l+(i/(lines[0].data.length-1))*iW;
+  const toY=v=>PAD.t+(1-(v-minV)/range)*iH;
+
+  // Grid
+  const gridColor=getComputedStyle(document.documentElement).getPropertyValue('--chart-grid').trim();
+  ctx.strokeStyle=gridColor; ctx.lineWidth=1;
+  for(let g=0;g<3;g++){const y=PAD.t+(g/2)*iH;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(W-PAD.r,y);ctx.stroke();}
+
+  if(opts&&opts.zeroLine){
+    // Always force zero to be visible: expand range if needed
+    const zeroColor=getComputedStyle(document.documentElement).getPropertyValue('--chart-zero').trim();
+    const zy=toY(0);
+    // Zero line — solid, visible, prominent
+    ctx.save();
+    ctx.strokeStyle=zeroColor;
+    ctx.lineWidth=1.5;
+    ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(PAD.l,zy);ctx.lineTo(W-PAD.r,zy);ctx.stroke();
+    ctx.setLineDash([]);
+    // "0" label on the left
+    ctx.fillStyle=zeroColor;
+    ctx.font=`700 9px ${getComputedStyle(document.documentElement).getPropertyValue('--mono')}`;
+    ctx.textAlign='left';
+    ctx.fillText('0',2,zy+3);
+    ctx.restore();
+
+    // Fill above/below zero
+    const notData=lines[0].data;
+    ctx.beginPath();
+    ctx.moveTo(toX(0),toY(0));
+    for(let i=0;i<notData.length;i++)ctx.lineTo(toX(i),toY(notData[i]));
+    ctx.lineTo(toX(notData.length-1),toY(0));
+    ctx.closePath();
+    const isAbove=notData[notData.length-1]>0;
+    ctx.fillStyle=isAbove?'rgba(0,208,132,0.1)':'rgba(255,71,87,0.1)';
+    ctx.fill();
+  }
+
+  // Lines
+  lines.forEach(({data,color,width})=>{
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=width||2;
+    ctx.lineJoin='round';ctx.lineCap='round';
+    data.forEach((v,i)=>i===0?ctx.moveTo(toX(i),toY(v)):ctx.lineTo(toX(i),toY(v)));
+    ctx.stroke();
+  });
+}
+
+function drawBoth(data){
+  drawChart('chart-cp',[
+    {data:data.callLine,color:'#00d084',width:2},
+    {data:data.putLine, color:'#1e90ff',width:2},
+  ],{});
+  drawChart('chart-not',[
+    {data:data.notLine,color:'#ffd32a',width:2},
+  ],{zeroLine:true});
+}
+
+function animateTo(target){
+  if(animFrame)cancelAnimationFrame(animFrame);
+  if(!animCurrent){animCurrent=target;drawBoth(animCurrent);return;}
+  animProgress=0;
+  const from=animCurrent;
+  function step(){
+    animProgress++;
+    const t=animProgress/ANIM_STEPS;
+    const ease=t<.5?2*t*t:-1+(4-2*t)*t;
+    drawBoth({
+      callLine:lerpArr(from.callLine,target.callLine,ease),
+      putLine: lerpArr(from.putLine, target.putLine, ease),
+      notLine: lerpArr(from.notLine, target.notLine, ease),
+    });
+    if(animProgress<ANIM_STEPS){animFrame=requestAnimationFrame(step);}
+    else{animCurrent=target;}
+  }
+  animFrame=requestAnimationFrame(step);
+}
+
+function refreshCharts(){animateTo(getChartData());}
+
+/* ═══════════════════════════════
+   SIGNAL BARS
+═══════════════════════════════ */
+function strengthFromSlider(v){
+  if(v<250)return Math.round(2*(v/250));
+  if(v<500)return 2+Math.round(4*((v-250)/250));
+  return 6+Math.round(4*Math.min((v-500)/500,1));
+}
+
+function updateBars(strength,cls){
+  const bars=document.getElementById('signal-bars');bars.innerHTML='';
+  const colors={bull:'var(--green)',bear:'var(--red)',warn:'var(--yellow)',neut:'var(--text3)'};
+  const col=colors[cls]||'var(--text3)';
+  for(let i=0;i<10;i++){
+    const h=4+i*2.4,active=i<strength;
+    const b=document.createElement('div');b.className='signal-bar';
+    b.style.height=h+'px';b.style.background=active?col:'var(--border2)';
+    if(active)b.style.boxShadow=`0 0 4px ${col}`;
+    bars.appendChild(b);
+  }
+}
+
+/* ═══════════════════════════════
+   RENDER
+═══════════════════════════════ */
+function render(){
+  const key=callState+'_'+putState;
+  const s=scenarios[key];
+  const g=gammaMsg[gammaState][s.cls];
+  const n=notionalMsg[notionalState][s.cls];
+  const bk=biasState+'_'+dirState;
+  const b=(biasMsg[bk]||{})[s.cls]||'';
+  const badgeCls={bull:'badge-bull',bear:'badge-bear',neut:'badge-neut',warn:'badge-warn'}[s.cls];
+  const badgeTxt={bull:'HAUSSIER',bear:'BAISSIER',neut:'NEUTRE',warn:'ATTENTION'}[s.cls];
+  const actionIcon={bull:'icon-action',bear:'icon-action-bear',neut:'icon-action-neut',warn:'icon-action-warn'}[s.cls];
+  const summaryBorderColor={bull:'var(--green)',bear:'var(--red)',neut:'var(--text3)',warn:'var(--yellow)'}[s.cls];
+
+  // Main result panel (top)
+  document.getElementById('result-box').innerHTML=`
+    <div class="result-panel">
+      <div class="result-header">
+        <div class="result-title">${s.titre}</div>
+        <div class="result-badge ${badgeCls}">${badgeTxt}</div>
+      </div>
+      <div class="result-body">
+        <div class="result-row"><div class="result-icon icon-flow">FLUX</div><div class="result-text">${s.flow}</div></div>
+        <div class="result-row"><div class="result-icon icon-gamma">GAMMA</div><div class="result-text">${g}</div></div>
+        <div class="result-row"><div class="result-icon icon-notional">INTENSITÉ</div><div class="result-text">${n} <span style="color:var(--text3);font-size:11px">(${notionalValue}M)</span></div></div>
+        <div class="result-row"><div class="result-icon icon-bias">BIAIS 1H</div><div class="result-text">${b}</div></div>
+        <div class="result-row"><div class="result-icon ${actionIcon}">ACTION</div><div class="result-text"><strong>${s.action}</strong></div></div>
+      </div>
+    </div>`;
+
+  // Summary repeated below charts
+  document.getElementById('result-summary-box').innerHTML=`
+    <div class="result-summary" style="border-left:3px solid ${summaryBorderColor}">
+      <div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Action</div>
+        <div class="summary-action">${s.action}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">${s.flow}</div>
+      </div>
+      <div class="summary-badge ${badgeCls}">${badgeTxt}</div>
+    </div>`;
+
+  updateBars(strengthFromSlider(notionalValue), s.cls);
+  refreshCharts();
+}
+
+/* ═══════════════════════════════
+   CONTROLS
+═══════════════════════════════ */
+const btnMap={up:'active-bull',flat:'active-white',dn:'active-bear'};
+
+function pick(type,val){
+  if(type==='call'){callState=val;['up','flat','dn'].forEach(v=>{document.getElementById('c-'+v).className='ctrl-btn'+(v===val?' '+btnMap[v]:'');});}
+  else{putState=val;['up','flat','dn'].forEach(v=>{document.getElementById('p-'+v).className='ctrl-btn'+(v===val?' '+btnMap[v]:'');});}
+  render();
+}
+function pickGamma(val){
+  gammaState=val;
+  document.getElementById('g-neg').className='ctrl-btn'+(val==='neg'?' active-bear':'');
+  document.getElementById('g-pos').className='ctrl-btn'+(val==='pos'?' active-bull':'');
+  render();
+}
+function pickBias(val){
+  biasState=val;
+  document.getElementById('nb-above').className='ctrl-btn'+(val==='above'?' active-bull':'');
+  document.getElementById('nb-below').className='ctrl-btn'+(val==='below'?' active-bear':'');
+  render();
+}
+function pickDir(val){
+  dirState=val;
+  ['up','flat','dn'].forEach(v=>{document.getElementById('nd-'+v).className='ctrl-btn'+(v===val?' '+btnMap[v]:'');});
+  render();
+}
+function showTab(t){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.tab').forEach((b,i)=>{b.classList.toggle('active',['sim','level','gamma','notional'][i]===t);});
+  if(t==='sim')setTimeout(refreshCharts,50);
+}
+function toggleTheme(){
+  isDark=!isDark;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  document.getElementById('theme-icon').textContent=isDark?'🌙':'☀️';
+  document.getElementById('theme-label').textContent=isDark?'DARK':'LIGHT';
+  updateSliderUI(notionalValue);
+  setTimeout(refreshCharts,30);
+}
+
+window.addEventListener('resize',()=>{if(animCurrent)drawBoth(animCurrent);});
+
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+updateSliderUI(350);
+render();
+setTimeout(()=>{animCurrent=null;refreshCharts();},80);
+</script>
+</body>
+</html>
