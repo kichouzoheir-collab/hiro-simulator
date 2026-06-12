@@ -70,28 +70,47 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 
 /* ── RESPONSIVE MOBILE ───────────────────────────── */
 @media(max-width:700px){
+  /* ── HEADER ── */
   .header{padding:10px 14px;flex-wrap:wrap;gap:8px}
   .logo-sub{display:none}
   .header-tag{display:none}
   .logo-text{font-size:12px}
+
+  /* ── TABS ── */
   .tabs{padding:0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
   .tab{padding:10px 12px;font-size:10px;white-space:nowrap;flex-shrink:0}
+
+  /* ── LAYOUT: content first (charts+analyse), sidebar below (controls) ── */
   .main{display:flex;flex-direction:column;min-height:unset}
-  .content{order:1;padding:10px 10px 0}
-  .sidebar{order:2;border-right:none;border-top:1px solid var(--border);overflow-y:visible;max-height:none;padding:12px 10px}
-  .charts-section{grid-template-columns:1fr;margin-top:8px;display:flex;flex-direction:column}
-  /* mobile order: levels, notional, calls/puts */
+  .content{order:1;padding:8px 8px 0}
+  .sidebar{order:2;border-right:none;border-top:1px solid var(--border);overflow-y:visible;max-height:none;padding:10px 8px}
+
+  /* ── CHARTS: stacked vertical, order spot/notional/calls ── */
+  .charts-section{display:flex!important;flex-direction:column!important;margin-top:6px;gap:6px}
   #chart-levels-card{order:1}
   .chart-card:has(#chart-not){order:2}
   .chart-card:has(#chart-cp){order:3}
-  .result-header{padding:12px 12px;flex-wrap:wrap;gap:6px}
-  .result-title{font-size:15px}
-  .result-body{padding:10px 12px;gap:8px}
-  .result-text{font-size:11px}
-  .result-icon{font-size:8px;padding:3px 6px}
-  .result-summary{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
-  .summary-action{font-size:13px}
+
+  /* ── ANALYSE PANEL: show only verdict + struct, hide raisonnement ── */
+  .analyse-secondary-title{display:none}
+  .analyse-row .analyse-tag.tag-gamma,
+  .analyse-row .analyse-tag.tag-notional,
+  .analyse-row .analyse-tag.tag-flow,
+  .analyse-row .analyse-tag.tag-sortie{display:none}
+  .analyse-row:has(.tag-gamma),
+  .analyse-row:has(.tag-notional),
+  .analyse-row:has(.tag-flow),
+  .analyse-row:has(.tag-sortie){display:none}
+  /* keep warnings (⚠) and 0DTE and STRUCT */
+  .analyse-row:has([style*="yellow-dim"]),
+  .analyse-row:has(.tag-0dte),
+  .analyse-row:has(.struct-summary){display:flex}
+  .analyse-primary{padding:14px 14px}
+  .analyse-verdict-text{font-size:16px}
+  .analyse-secondary{padding:10px 14px;gap:8px}
+
+  /* ── CONTROLS: compact ── */
   .ctrl-group-label{font-size:9px}
   .ctrl-btn{padding:5px 3px}
   .ctrl-btn-val{font-size:13px}
@@ -101,6 +120,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
   .signal-bar{width:4px}
   .slider-val{min-width:38px;font-size:11px}
   .slider-tick{font-size:7px}
+  .result-summary{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
+  .summary-action{font-size:13px}
 }
   .logo-sub{display:none}
   .header-tag{display:none}
