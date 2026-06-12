@@ -61,11 +61,43 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .main{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 90px)}
 .sidebar{border-right:1px solid var(--border);padding:16px;background:var(--bg2);display:flex;flex-direction:column;gap:12px;overflow-y:auto}
 .content{padding:20px 24px;overflow-y:auto}
+/* lock desktop layout against mobile overrides */
+@media(min-width:701px){
+  .main{display:grid !important;grid-template-columns:320px 1fr !important;flex-direction:unset}
+  .content{order:unset}
+  .sidebar{order:unset;border-top:none;border-right:1px solid var(--border)}
+}
 
 /* ── RESPONSIVE MOBILE ───────────────────────────── */
 @media(max-width:700px){
-  /* header compact */
   .header{padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .logo-sub{display:none}
+  .header-tag{display:none}
+  .logo-text{font-size:12px}
+  .tabs{padding:0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{padding:10px 12px;font-size:10px;white-space:nowrap;flex-shrink:0}
+  .main{display:flex;flex-direction:column;min-height:unset}
+  .content{order:1;padding:10px 10px 0}
+  .sidebar{order:2;border-right:none;border-top:1px solid var(--border);overflow-y:visible;max-height:none;padding:12px 10px}
+  .charts-section{grid-template-columns:1fr;margin-top:8px}
+  .result-header{padding:12px 12px;flex-wrap:wrap;gap:6px}
+  .result-title{font-size:15px}
+  .result-body{padding:10px 12px;gap:8px}
+  .result-text{font-size:11px}
+  .result-icon{font-size:8px;padding:3px 6px}
+  .result-summary{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
+  .summary-action{font-size:13px}
+  .ctrl-group-label{font-size:9px}
+  .ctrl-btn{padding:5px 3px}
+  .ctrl-btn-val{font-size:13px}
+  .ctrl-btn-label{font-size:7px}
+  .ctrl-btn-sub{font-size:7px;margin-top:1px}
+  .signal-bars{height:20px}
+  .signal-bar{width:4px}
+  .slider-val{min-width:38px;font-size:11px}
+  .slider-tick{font-size:7px}
+}
   .logo-sub{display:none}
   .header-tag{display:none}
   .logo-text{font-size:12px}
